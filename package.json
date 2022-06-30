@@ -1,0 +1,50 @@
+{
+  "name": "capstoneprojectnode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node server.js --ignore public/ --experimental-modules --es-module-specifier-resolution=node app.js",
+    "dev": "webpack -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dhairya2811/CapstoneProjectNode.git"
+  },
+  "author": "Dhairya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dhairya2811/CapstoneProjectNode/issues"
+  },
+  "homepage": "https://github.com/Dhairya2811/CapstoneProjectNode#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bcrypt": "^5.0.1",
+    "bootstrap": "^5.1.3",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "jquery": "^3.6.0",
+    "node-sass-middleware": "^1.0.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.1.0",
+    "react-bootstrap": "^2.4.0",
+    "react-dom": "^18.1.0",
+    "react-router-dom": "^6.3.0",
+    "sqlite": "^4.1.1",
+    "sqlite3": "^5.0.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@babel/node": "^7.17.10",
+    "@babel/plugin-proposal-class-properties": "^7.17.12",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-react": "^7.17.12",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.5",
+    "eslint": "^8.17.0",
+    "eslint-plugin-react": "^7.30.0",
+    "nodemon": "^2.0.16",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  }
+}
