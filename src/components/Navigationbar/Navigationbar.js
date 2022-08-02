@@ -6,12 +6,16 @@ import { Container, Nav } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
 
 class Navigationbar extends Component{
+    logout(){
+        console.log("logout clicked");
+        sessionStorage.removeItem("username");
+        window.location.href = "/";
+    }
     render(){
         let username = (sessionStorage.getItem("username"));
-        console.log(username == null);
         var returnNav;
         var userDisplay;
-        if(username == null){
+        if(username === null){
             returnNav = <Nav id="Navbarclass" className="me-auto">
                             <Nav.Link as={NavLink} to="/register">Register</Nav.Link>
                             <Nav.Link as={NavLink} to="/signin">Sign In</Nav.Link>
@@ -21,13 +25,13 @@ class Navigationbar extends Component{
             returnNav = <Nav id="Navbarclass" className="me-auto">
                             <Nav.Link as={NavLink} to="#">My Cart</Nav.Link>
                             <Nav.Link as={NavLink} to="#">My Item</Nav.Link>
-                            <Nav.Link as={NavLink} to="#">Add Item</Nav.Link>
-                            <Nav.Link as={NavLink} to="#">Log Out</Nav.Link>
+                            <Nav.Link as={NavLink} to="/addItem">Add Item</Nav.Link>
+                            <Nav.Link as={NavLink} to="#" onClick={this.logout}>Log Out</Nav.Link>
                         </Nav>;
             userDisplay = <Navbar.Text className="justify-content-end">Signed in as <strong>{username}</strong></Navbar.Text>;
         }
         return (
-            <Navbar fixed="top">
+            <Navbar fixed="top" style={{backgroundColor: "white"}}>
                 <Container>
                     <Navbar.Brand as={NavLink} to="/">App Name</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />

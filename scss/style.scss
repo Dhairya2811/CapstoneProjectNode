@@ -7,4 +7,21 @@
             width: 60%;
         }
     }
+    #displayItems{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2em;
+        justify-content: center;
+    }
+    .itemDisplayDiv{
+        width:fit-content;
+        border: 1px solid rgb(214, 214, 214);
+        background-color: rgb(240, 239, 239);
+        border-radius: 10px;
+        .titlePriceDiv{
+            width: 100%;
+            text-align: center;
+        }
+    }
+
 }

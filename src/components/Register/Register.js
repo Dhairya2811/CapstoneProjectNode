@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Error404 from "../Error404/Error404";
 
 class Register extends Component{
     constructor(props){
@@ -40,13 +41,18 @@ class Register extends Component{
                     })
                     .then(res=>res.text())
                     .then(res=>{
-                        if(res == "Inserted"){
-                            this.errDisplay(false, "");
-                            sessionStorage.setItem("username", useName);
-                            window.location.href = "/";
-                        }else if(res == "Taken"){
+                        console.log(res);
+                        if(res === "Taken"){
+                            console.log(res);
                             this.errDisplay(true, "This user name is already taken.")
+                        }else{
+                            console.log("inserted")
+                            // this.errDisplay(false, "");
+                            sessionStorage.setItem("username", useName);
+                            console.log(sessionStorage.getItem("username"));
+                            window.location.href = "/";
                         }
+                        console.log("Dhairya");
                     });
                 }
             }
@@ -58,9 +64,9 @@ class Register extends Component{
         }
         event.preventDefault();
     }
-    render(){
-        return(
-            <div className="FormPage d-flex justify-content-center align-items-center">
+    returnFunction(){
+        if(sessionStorage.getItem("username") == null){
+            return <div className="FormPage d-flex justify-content-center align-items-center">
                 <form onSubmit={this.submitBtnClick}>
                     <div className="alert alert-danger" id="err" style={{display: "none"}}></div>
                     <div className="register-username">
@@ -82,6 +88,15 @@ class Register extends Component{
                     <input type="submit" value="Submit" className="btn btn-primary" />
                 </form>
             </div>
+        }else{
+            return <Error404 errorMessage="You are already sign in." linkAvailable="true"/> 
+        }
+    }
+    render(){
+        return(
+            <>
+                {this.returnFunction()}
+            </>
         );
     }
 }

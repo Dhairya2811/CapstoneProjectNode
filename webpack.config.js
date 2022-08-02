@@ -14,18 +14,17 @@ module.exports = {
           loader: 'babel-loader'
         },
         {
-          test: /\.scss$/,
-          // use:[
-          //   MiniCssExtractPlugin.loader,
-          //   'css-loader',
-          //   'postcss-loader',
-          //   {
-          //     loader: 'sass-loader',
-          //     options: {
-          //       implementation: require('node-sass'),
-          //     },
-          //   },
-          // ]
+          test: /\.(gif|png|jpe?g|svg)$/i,
+          use:[
+            "file-loader",
+            {
+              loader: 'image-webpack-loader',
+              options:{
+                bypassOnDebug: true,
+                disable: true,
+              }
+            }
+          ]
         }
       ]
     }

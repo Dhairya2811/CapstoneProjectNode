@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import Error404 from "../Error404/Error404";
 
 class SignIn extends Component{
     constructor(props){
@@ -55,9 +56,9 @@ class SignIn extends Component{
         }
         event.preventDefault();
     }
-    render(){
-        return(
-            <div className="FormPage d-flex justify-content-center align-items-center">
+    returnFunction(){
+        if(sessionStorage.getItem("username") == null){
+            return <div className="FormPage d-flex justify-content-center align-items-center">
                 <form onSubmit={this.submitBtnClick}>
                     <div className="alert alert-danger" id="err" style={{display: "none"}}></div>
                     <div className="signin-username">
@@ -71,6 +72,17 @@ class SignIn extends Component{
                     <input type="submit" className="btn btn-primary" value="Submit" />
                 </form>
             </div>
+        }else{
+            return <Error404 errorMessage="You are already sign in." linkAvailable="true"/>
+        }
+        // console.log(sessionStorage.getItem("username"))
+    }
+    render(){
+        const returnfunction = this.returnFunction();
+        return(
+            <>
+                {this.returnFunction()}
+            </>
         );
     }
 }
