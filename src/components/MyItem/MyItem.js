@@ -4,7 +4,7 @@ import ItemDisplay from "../ItemDisplay/ItemDisplay";
 import LoadingSpinner from "../LoadingComponent/Loading";
 
 
-var  Index = ({count})=> {
+var  MyItem = ({count})=> {
     var [items, setItems] = useState([]);
     var [path, setPath] = useState("");
     var [loading, setLoading] = useState(true);
@@ -12,10 +12,10 @@ var  Index = ({count})=> {
     
     useEffect(()=>{
         setPath(window.location.pathname);
-        if(path == "/" && count == 0){
-            setCount(1);
+        if(path == "/myItems" && count % 2 == 0){
+            setCount(count+1);
             setLoading(true);
-            fetch("/index")
+            fetch("/getMyItems/"+sessionStorage.getItem("username"))
             .then(res => res.json())
             .then(res => {
                 setItems(res);
@@ -35,4 +35,4 @@ var  Index = ({count})=> {
     );
 }
 
-export default Index;
+export default MyItem;

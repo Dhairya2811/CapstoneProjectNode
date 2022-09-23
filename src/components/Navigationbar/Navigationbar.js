@@ -23,8 +23,8 @@ class Navigationbar extends Component{
             userDisplay = <Navbar.Text className="justify-content-end">Not Signed In</Navbar.Text>;
         }else{
             returnNav = <Nav id="Navbarclass" className="me-auto">
-                            <Nav.Link as={NavLink} to="#">My Cart</Nav.Link>
-                            <Nav.Link as={NavLink} to="#">My Item</Nav.Link>
+                            <Nav.Link as={NavLink} to="/myCart">My Cart</Nav.Link>
+                            <Nav.Link as={NavLink} to="/myItems">My Item</Nav.Link>
                             <Nav.Link as={NavLink} to="/addItem">Add Item</Nav.Link>
                             <Nav.Link as={NavLink} to="#" onClick={this.logout}>Log Out</Nav.Link>
                         </Nav>;

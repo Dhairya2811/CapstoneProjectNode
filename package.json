@@ -26,6 +26,7 @@
     "file-loader": "^6.2.0",
     "image-webpack-loader": "^8.1.0",
     "jquery": "^3.6.0",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "node-sass-middleware": "^1.0.1",
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
