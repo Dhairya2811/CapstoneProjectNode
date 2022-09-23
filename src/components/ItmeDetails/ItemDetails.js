@@ -1,17 +1,22 @@
 import {useEffect, useState} from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Error404 from "../Error404/Error404";
 
 var ItemDetails = () => {
     var [item, setItem] = useState();
+    var [itemLoaded, setItemLoaded] = useState(false);
     var {id} = useParams();
     var navigate = useNavigate();
     var [commentLoading, setCommentLoading] = useState(true);
     var [comments, setComments] = useState([]);
 
     useEffect(()=>{
-        fetch(`/getItem/${id}`)
-        .then(res => res.json())
-        .then(res=>{setItem(res)});
+        if(itemLoaded == false){
+            setItemLoaded(true);
+            fetch(`/getItem/${id}`)
+            .then(res => res.json())
+            .then(res=>{setItem(res)});
+        }
         let itemid = id;
         if(commentLoading){
             fetch("/getComments/"+itemid)
@@ -80,10 +85,11 @@ var ItemDetails = () => {
     var delItem = ()=>{
         // console.log("Delete item: "+id);
         fetch(`/delete/${id}`)
-        .then(res=>res.text())
+        .then(res => res.text())
         .then(res=>{
-            console.log(res)
-            navigate(`/`);
+            if(res == "deleted"){
+                navigate("/");
+            }
         });
     }
 
@@ -119,7 +125,6 @@ var ItemDetails = () => {
     }
     var getComments = ()=>{
         if(comments.length != 0 ){
-            console.log("Get comment ");
             return <div style={{backgroundColor:"red"}}>{comments.map(comment=>{
                 return (<div>
                     <div className="commentHeader">
@@ -133,7 +138,6 @@ var ItemDetails = () => {
     }
     var returnFun = ()=>{
         if(item == undefined){
-            <div style={{height: window.innerHeight, width: window.innerWidth, zIndex: 1, backgroundColor: "gray"}}></div>
         }else{
             var getComment = getComments();
             return <>
@@ -155,7 +159,7 @@ var ItemDetails = () => {
                         <h3>Comment</h3>
                     </span>
                     {addComment()}
-                    {getComment}
+                    {getComments()}
                 </div>
             </>
         }

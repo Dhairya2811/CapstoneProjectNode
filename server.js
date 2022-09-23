@@ -74,30 +74,33 @@ server.get("/getItem/:id", async (req, res)=>{
     (await db).get(sql)
     .then(
         async (rows)=>{
-            // rows["incart"] = true;
-            (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
-            .then(internalrows =>{
-                var inCart = false;
-                if ((internalrows).length !== 0){
-                    inCart = true;
-                }
-                rows["inCart"] = inCart;
-                res.send(rows);
-            });
+            if(rows != undefined){
+                rows["incart"] = true;
+                (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
+                .then(internalrows =>{
+                    var inCart = false;
+                    if ((internalrows).length !== 0){
+                        inCart = true;
+                    }
+                    rows["inCart"] = inCart;
+                    res.send(rows);
+                });
+            }else{
+                res.send([])
+            }
         }
     );
 });
 
-server.get("/delete/:id", async (req, response)=>{
+server.get("/delete/:id", async(req, response)=>{
     var itemID = req.params.id;
     console.log("item to delete: "+ itemID);
     var sql = `DELETE FROM items where rowid = ?`;
     var params = [itemID];
-    // await db.all(sql, params)
-    // .then(res=>{
-    //     response.send("deleted");
-    // });
-    response.send("d");
+    (await db).run(sql, params)
+    .then(row=>{
+        response.send("deleted");
+    });
 });
 
 server.post("/addComment", async(req, res)=>{
