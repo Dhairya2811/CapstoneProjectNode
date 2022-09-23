@@ -1,0 +1,71 @@
+.body{
+    margin-top: 3.9em;
+    .FormPage{
+        height: 50%;
+        min-height: 27em;
+        form{
+            width: 60%;
+        }
+    }
+    .displayItems{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2em;
+        justify-content: center;
+    }
+    .itemDisplayDiv{
+        width:fit-content;
+        border: 1px solid rgb(214, 214, 214);
+        background-color: rgb(240, 239, 239);
+        border-radius: 10px;
+        bottom: 0px;
+        .titlePriceDiv{
+            position: static;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 0px;
+        }
+    }
+    .commentsDiv{
+        margin: 2em 3em 0em 3em;
+        .commentHeading{
+            h3{
+                border-bottom: 1px solid rgb(162, 162, 162); 
+                padding-left: 0.5em;
+                padding-bottom: 10px;   
+            }
+        }
+        .addCommentDiv{
+            display: grid;
+            grid-template-columns: 93% 7%;
+            .submitButton{
+                .submitCommentBtn{
+                    border: 1px solid rgb(21, 0, 255);
+                    background-color: rgb(0, 187, 255);
+                    height: 100%;
+                    width: 100%;
+                    border-radius: 0px 10px 10px 0px;
+                }
+            }
+        }
+    }
+    
+    // this is the loading animation style
+    @keyframes spinner {
+        0%{
+            transform: rotate(0deg);
+        }
+        100%{
+            transform: rotate(360deg);
+        }
+    }
+    .loading-spinner{
+        width: 50px;
+        height: 50px;
+        border: 10px solid #f3f3f3;
+        border-top: 10px solid #383636;
+        border-radius: 50%;
+        animation: spinner 1.5s linear infinite;
+    }
+}
