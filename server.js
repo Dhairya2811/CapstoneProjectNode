@@ -5,7 +5,6 @@ import path from "path";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite"; 
 import bcrypt from "bcrypt";
-import { bool } from "prop-types";
 
 // variables
 const saltRound = 10;
@@ -26,6 +25,8 @@ server.use(sassMiddleware({
     debug: true,
     outputStyle: 'compressed'
 }));
+
+server.use(express.json({limit: '50mb'}));
 
 server.set("view engine", "ejs");
 
