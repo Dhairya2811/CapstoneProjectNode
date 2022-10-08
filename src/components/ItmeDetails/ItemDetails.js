@@ -84,7 +84,7 @@ var ItemDetails = () => {
         fetch(`/delete/${id}`)
         .then(res=>res.text())
         .then(res=>{
-            navigate(`/`);
+            navigate("/");
         });
     }
 

@@ -6,7 +6,6 @@ var ItemDisplay = ({item}) => {
     var navigate = useNavigate();
 
     const clickFunction = ()=> {
-        console.log("clicked item");
         navigate(`/details/${item.rowid}`);
     };
     return(
