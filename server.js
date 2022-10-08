@@ -90,14 +90,17 @@ server.get("/getItem/:id", async (req, res)=>{
 
 server.get("/delete/:id", async (req, response)=>{
     var itemID = req.params.id;
-    console.log("item to delete: "+ itemID);
     var sql = `DELETE FROM items where rowid = ?`;
     var params = [itemID];
-    // await db.all(sql, params)
-    // .then(res=>{
-    //     response.send("deleted");
-    // });
-    response.send("d");
+    console.log(itemID);
+    (await db).get(sql, params)
+    .then(res=>{
+        // setTimeout(()=>{
+        //     response.redirect("/index");
+        // }, 100);
+        response.send("deleted")
+    });
+    // response.send("d");
 });
 
 server.post("/addComment", async(req, res)=>{
