@@ -5,6 +5,7 @@ import path from "path";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite"; 
 import bcrypt from "bcrypt";
+import { bool } from "prop-types";
 
 // variables
 const saltRound = 10;
@@ -54,7 +55,6 @@ server.get("/getMyItems/:username", async(req, res)=>{
     var sql = `Select rowid, * from items where name = "${req.params.username}"`;
     (await db).all(sql).then(
         data =>{
-            console.log(data)
             res.json(data);
         }
     )
@@ -113,6 +113,17 @@ server.post("/addComment", async(req, res)=>{
     .then((err, rows)=>{
         if(err){console.error(err)}
         res.send("Inserted");
+    });
+});
+
+server.post("/flagComment", async(req, res)=>{
+    var data = req.body;
+    var sql = "UPDATE comment SET flag=? WHERE rowid=? ";
+    var flag = !(parseInt(data.flag));
+    var params = [flag, data.rowid];
+    (await db).all(sql, params).then((err, rows)=>{
+        if(err){console.log(err);}
+        res.send("flag_change");
     });
 });
 

@@ -36,6 +36,35 @@
                 padding-bottom: 10px;   
             }
         }
+        .commentHeader{
+            width: 100%;
+            border-bottom: 1px solid gray;
+            .commenterName{
+                margin-top: 1em;
+                display: grid;
+                grid-template-columns: 45% 45% 10%;
+                color: rgb(56, 56, 56);
+
+                small{
+                    display: flex;
+                    justify-content: end;
+                    align-self: flex-end;
+                    margin-bottom: 5px;
+                }
+                #flagBtn{
+                    cursor: pointer;
+                    padding-left: 2em;
+                    display: flex;
+                    align-self: flex-end;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+        .commentText{
+            min-height: 3em;
+            margin-bottom: 2em;
+            padding: 0 1.5%;
+        }
         .addCommentDiv{
             display: grid;
             grid-template-columns: 93% 7%;

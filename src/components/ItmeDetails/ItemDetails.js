@@ -3,27 +3,31 @@ import { useParams, useNavigate } from "react-router-dom";
 
 var ItemDetails = () => {
     var [item, setItem] = useState();
+    var [itemLoaded, setItemLoaded] = useState(false);
     var {id} = useParams();
     var navigate = useNavigate();
     var [commentLoading, setCommentLoading] = useState(true);
     var [comments, setComments] = useState([]);
 
     useEffect(()=>{
-        fetch(`/getItem/${id}`)
-        .then(res => res.json())
-        .then(res=>{setItem(res)});
-        let itemid = id;
-        if(commentLoading){
-            fetch("/getComments/"+itemid)
-            .then(res=>res.json())
-            .then(res=>{
-                setCommentLoading(false);
-                console.log(res);
-                setComments(res);
-            });
+        if(itemLoaded == false){
+            setItemLoaded(true);
+            fetch(`/getItem/${id}`)
+            .then(res => res.json())
+            .then(res=>{setItem(res)});
+        }
+        if(commentLoading == true){
+            getCommentData();
         }
     });
-    
+    var getCommentData = ()=>{
+        fetch("/getComments/"+id)
+        .then(res=>res.json())
+        .then(res=>{
+            setCommentLoading(false);
+            setComments(res);
+        });
+    }
     var addToCart = ()=>{
         let username = (sessionStorage.getItem("username"));
         let itemID = id;
@@ -48,7 +52,6 @@ var ItemDetails = () => {
         if(text.length == 0){
             console.log("Comment empty");
         }else{
-            console.log("comment submitted");
             var date = new Date();
             var day = date.getDate();
             var month = date.getMonth()+1;
@@ -78,11 +81,9 @@ var ItemDetails = () => {
     }
 
     var delItem = ()=>{
-        // console.log("Delete item: "+id);
         fetch(`/delete/${id}`)
         .then(res=>res.text())
         .then(res=>{
-            console.log(res)
             navigate(`/`);
         });
     }
@@ -94,7 +95,6 @@ var ItemDetails = () => {
             </div>
             <div className="submitButton">
                 <button className="submitCommentBtn" onClick={submitComment.bind(this)}><i className='material-icons' style={{color: "white"}}>send</i></button>
-                {/* <input type="button" value={<i class='material-icons'>send</i>} onClick={submitComment()} className="submitCommentBtn" /> */}
             </div>
         </div>
     }
@@ -117,17 +117,40 @@ var ItemDetails = () => {
             }
         }
     }
+    function flagComment(comment){
+        fetch("/flagComment", {
+            method: "post",
+            headers:{
+                "Content-Type":"application/json",
+            },
+            credentials:"include",
+            body: JSON.stringify({rowid: comment.rowid, flag: comment.flag})
+        })
+        .then(res => res.text())
+        .then(res=>{if(res == "flag_change"){
+            getCommentData();
+        }})
+    }
+    function displayComment(comment){
+        return (<div>
+                <div className="commentHeader">
+                    <div className="commenterName">
+                        <h4>{comment.name}</h4>
+                        <small>{comment.datetime} </small>
+                        {comment.flag == "0" ? <div style={{color: "gray"}} id="flagBtn" onClick={()=> flagComment(comment)} >&#9873;</div> : <div style={{color: "red"}} id="flagBtn" onClick={()=> flagComment(comment)} >&#9873;</div>}
+                    </div>
+                </div>
+                <div className="commentText">
+                    {comment.comment}
+                </div>
+            </div>)
+    }
     var getComments = ()=>{
         if(comments.length != 0 ){
-            console.log("Get comment ");
-            return <div style={{backgroundColor:"red"}}>{comments.map(comment=>{
-                return (<div>
-                    <div className="commentHeader">
-                        <div className="commentTitle">
-                            {comment.username}
-                        </div>
-                    </div>
-                </div>)
+            return <div style={{width:"100%", padding: "0 3%"}}>{comments.map(comment=>{
+                return(<div>
+                    {displayComment(comment)}
+                </div>);
             })}</div>
         }
     }
@@ -154,7 +177,8 @@ var ItemDetails = () => {
                     <span className="commentHeading">
                         <h3>Comment</h3>
                     </span>
-                    {addComment()}
+                    {sessionStorage.getItem("username") != null ? addComment() :
+                    <></>}
                     {getComment}
                 </div>
             </>
