@@ -79,7 +79,14 @@
             }
         }
     }
-    
+    .paymentPage{
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        .displayPaymentItems{
+        }
+        .checkoutPrice{
+        }
+    }
     // this is the loading animation style
     @keyframes spinner {
         0%{
