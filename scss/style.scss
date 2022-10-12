@@ -82,9 +82,60 @@
     .paymentPage{
         display: grid;
         grid-template-columns: 2fr 1fr;
+        height: 90%;
+        $payment-background-color: rgb(242, 242, 242);
         .displayPaymentItems{
+            .paymentListItem{
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                padding: 1em 3em;
+                background-color: $payment-background-color;
+                margin-bottom: 2em;
+                border-radius: 10px;
+                img{
+                    width: 10em;
+                    height: 10em;
+                    border-radius: 5px;
+                }
+            }
+            .paymentListDetails{
+                margin-left: 1em;
+                display: flex;
+                align-items: center;
+            }
         }
         .checkoutPrice{
+            margin-left: 1em;
+            border-radius: 10px;
+            padding: 2em 10%;
+            background-color: $payment-background-color;
+            h2{
+                width: 100%;
+                text-align: center;
+            }
+            hr{
+                margin: -0.3em 0 0.3em;
+            }
+            .itemList{
+                margin-bottom: 1em;
+                div{
+                    width: 100%;
+                    margin-top: 0.2em;
+                }
+            }
+            .title{
+                font-weight: bold;
+                font-size: 17px;
+            }
+            .price{
+                float: right;
+            }
+            .tax{
+                margin-bottom: 1em;
+            }
+            #paymentButtons{
+                margin-top: 5em;
+            }
         }
     }
     // this is the loading animation style
