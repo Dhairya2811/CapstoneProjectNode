@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Error404 from "../Error404/Error404";
+import { useNavigate } from "react-router-dom";
 
 var DisplayPaymentItems = ({item})=>{
     return <div className="paymentListItem">
@@ -19,7 +20,7 @@ var DisplayPaymentItems = ({item})=>{
 
 var Payment = ()=>{
     const [items, setItems] = useState([]);
-
+    var navigate = useNavigate();
     useEffect(()=>{
         var subtotal = 0;
         items.map(item=>subtotal = subtotal+parseFloat(item.price));
@@ -38,7 +39,13 @@ var Payment = ()=>{
               return actions.order.capture().then(function(orderData) {
                 console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
                 const transaction = orderData.purchase_units[0].payments.captures[0];
-                alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+                // alert(`The order has been placed successfully.\nThank you for shopping.`);
+                document.getElementById("purchaseMessage").style.display = "block";
+                setTimeout(()=>{
+                    document.getElementById("purchaseMessage").style.display = "none";
+                    navigate("/");
+                }, 2000);
+                // alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
               });
             }
           }).render('#paypal-button-container');
@@ -58,42 +65,48 @@ var Payment = ()=>{
 
     var returnComponent = ()=>{
         if(items.length != 0){
-            return (<div className="paymentPage">
-                <div className="displayPaymentItems">
-                    {console.log(items)}
-                    {items.map(item=>{
-                        return <DisplayPaymentItems item={item} />
-                    })}
-                </div>
-                <div className="checkoutPrice" style={{height: `${window.innerHeight * 0.9}px`}}>
-                    <h2>Payment</h2>
-                    <hr />
-                    <div className="itemList">
-                        {items.map(item=>{
-                            return <div><span className="title">{item.title}</span>: <span className="price">${parseFloat(item.price).toFixed(2)}</span></div>
-                        })}
-                    </div>
-                    <hr />
-                    <div className="subTotal">
-                        <span className="title">Subtotal</span>:
-                        <span className="price">${getSubtotal().subtotal}</span>
-                    </div>
-                    <div className="tax">
-                        <span className="title">Tax</span>:
-                        <span className="price">${getSubtotal().tax}</span>
-                    </div>
-                    <hr />
-                    <div className="total">
-                        <span className="title">Total</span>:
-                        <span className="price">${getSubtotal().total}</span>
-                    </div>
+            return (
+                <div>
+                    <div id="purchaseMessage" className="alert alert-success" style={{display: "none"}}>
+                            The order has been placed successfully. Thank you for shopping.
+                        </div>
+                    <div className="paymentPage">
+                        <div className="displayPaymentItems">
+                            {console.log(items)}
+                            {items.map(item=>{
+                                return <DisplayPaymentItems item={item} />
+                            })}
+                        </div>
+                        <div className="checkoutPrice" style={{height: `${window.innerHeight * 0.9}px`}}>
+                            <h2>Payment</h2>
+                            <hr />
+                            <div className="itemList">
+                                {items.map(item=>{
+                                    return <div><span className="title">{item.title}</span>: <span className="price">${parseFloat(item.price).toFixed(2)}</span></div>
+                                })}
+                            </div>
+                            <hr />
+                            <div className="subTotal">
+                                <span className="title">Subtotal</span>:
+                                <span className="price">${getSubtotal().subtotal}</span>
+                            </div>
+                            <div className="tax">
+                                <span className="title">Tax</span>:
+                                <span className="price">${getSubtotal().tax}</span>
+                            </div>
+                            <hr />
+                            <div className="total">
+                                <span className="title">Total</span>:
+                                <span className="price">${getSubtotal().total}</span>
+                            </div>
 
-                    {/* paypal button */}
-                    <div id="paymentButtons">                    
-                        <div id="paypal-button-container" ></div>
-                    </div>
+                            {/* paypal button */}
+                            <div id="paymentButtons">                    
+                                <div id="paypal-button-container" ></div>
+                            </div>
 
-                </div>
+                        </div>
+                    </div>
             </div>);
         }else{
             return <Error404 errorMessage="There is no URL like this." linkAvailable = "true" />
