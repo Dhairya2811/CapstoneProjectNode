@@ -32,7 +32,7 @@ server.set("view engine", "ejs");
 
 server.use(express.json());
 
-server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", "/myItems", "/editItem/:id"], (req, response)=>{
+server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", "/myItems", "/editItem/:id", "/payment"], (req, response)=>{
         response.render('index');    
 });
 
@@ -65,7 +65,7 @@ server.get("/getCartItems/:username", async (req, res)=>{
     var sql = `select c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category from cart as c inner join items as i on c.itemID = i.rowid where c.name = "${req.params.username}"`;
     (await db).all(sql)
     .then(row=>{
-        res.send(row)
+        res.send(row);
     });
 });
 // ****************************************************************************
