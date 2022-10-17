@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 var DisplayPaymentItems = ({item})=>{
     return <div className="paymentListItem">
-        {console.log(item)}
         <div className="paymentListImage">
             <img src={item.image}/>
         </div>
@@ -37,13 +36,34 @@ var Payment = ()=>{
             },
             onApprove: (data, actions) => {
               return actions.order.capture().then(function(orderData) {
-                console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-                const transaction = orderData.purchase_units[0].payments.captures[0];
+                // console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                // const transaction = orderData.purchase_units[0].payments.captures[0];
                 // alert(`The order has been placed successfully.\nThank you for shopping.`);
                 document.getElementById("purchaseMessage").style.display = "block";
                 setTimeout(()=>{
-                    document.getElementById("purchaseMessage").style.display = "none";
-                    navigate("/");
+                    var userName = sessionStorage.getItem("username");
+                    var itemIds = [];
+                    var itemQuantities = [];
+                    items.map(item=>{
+                        itemIds.push(item.rowid);
+                        itemQuantities.push(item.quantity);
+                    });
+                    fetch("/successfulPurchase", {
+                        method: "post",
+                        headers:{
+                            "Content-Type":"application/json",
+                        },
+                        credentials:"include",
+                        body: JSON.stringify({userName: userName, items: [itemIds, itemQuantities]})
+                    })
+                    .then(res => res.text())
+                    .then(res => {
+                        console.log(res)
+                        if(res == "purchased"){        
+                            document.getElementById("purchaseMessage").style.display = "none";
+                            navigate("/");
+                        }
+                    });
                 }, 2000);
                 // alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
               });

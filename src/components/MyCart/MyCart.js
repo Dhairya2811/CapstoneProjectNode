@@ -35,6 +35,7 @@ var MyCart = ()=>{
                         </div>     
                 {items.map((item, index)=>{
                     return <>
+                        {console.log(item)}
                         <ItemDisplay item = {item} key={index} />
                     </>
                 })}
