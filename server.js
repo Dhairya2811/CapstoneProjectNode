@@ -1,5 +1,4 @@
 import express from "express";
-import api from "./api/index.js";
 import sassMiddleware from "node-sass-middleware";
 import path from "path";
 import sqlite3 from "sqlite3";
@@ -40,9 +39,7 @@ server.get("/index", async (req, response)=>{
     var sql = "Select rowid,* from items";
     (await db).all(sql).then(
         data=>{
-            setTimeout(()=>{    
-                response.json(data);
-            }, 500);
+            response.json(data);
         }
     );
 });
@@ -247,30 +244,20 @@ server.post("/updateItem", async (req, res)=>{
 server.post("/successfulPurchase", async (req, res)=>{
     var data = req.body;
     var items = data.items;
-    var doneUpdate = false;
-    // var itemQuantities = data.itemQuantities;
     for(let i = 0; i<items.length; i++){
         var sql = `UPDATE items SET quantity = ? WHERE rowid=?`;
         var params = [parseInt(items[1][i])-1, parseInt(items[0][i])];
         (await db).all(sql, params)
         .then((err, rows)=>{
             if(err){console.log(err);}
-            
-            if(i == items.length-1){
-                doneUpdate = true;
-            }
         });
     }
     res.send("purchased");
 });
 
-// server.use('/api', api);
 server.use(express.static('public')); // use this middleware before get method.
 
 
 server.listen(3000, async ()=>{
-    // (await db).exec("CREATE TABLE comment (name text, datetime text, flag text, comment text, itemid int, FOREIGN KEY (name) REFERENCES users(username), FOREIGN KEY (itemid) REFERENCES items(rowid))");
-    // (await db).exec("DELETE FROM cart");
-    // (await db).exec("CREATE TABLE items ( title text, description text, price text, image text, imageName text, quantity number, category text, name text, FOREIGN KEY (name) REFERENCES users(username))")
     console.log("Server is listening on port 3000");
 });
