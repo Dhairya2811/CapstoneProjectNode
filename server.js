@@ -36,7 +36,7 @@ server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", 
 });
 
 server.get("/index", async (req, response)=>{
-    var sql = "Select rowid,* from items";
+    var sql = "Select rowid,* from items where quantity>0";
     (await db).all(sql).then(
         data=>{
             response.json(data);
@@ -61,7 +61,7 @@ server.get("/getMyItems/:username", async(req, res)=>{
 });
 // ****************************************************************************
 server.get("/getCartItems/:username", async (req, res)=>{
-    var sql = `select c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category from cart as c inner join items as i on c.itemID = i.rowid where c.name = "${req.params.username}"`;
+    var sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${req.params.username}" AND i.quantity > 0`;
     (await db).all(sql)
     .then(row=>{
         res.send(row);
