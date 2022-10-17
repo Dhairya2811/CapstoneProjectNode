@@ -171,6 +171,7 @@ var ItemDetails = () => {
                         <pre style={{fontSize: "15px", marginTop: "2em"}}>{item.description}</pre>
                     </div>
                 </div>
+                {/* {console.log(item)} */}
                 {addToCartBtnDisplay()}  
                 <br/>
                 <div className="commentsDiv">

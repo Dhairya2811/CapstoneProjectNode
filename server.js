@@ -40,7 +40,9 @@ server.get("/index", async (req, response)=>{
     var sql = "Select rowid,* from items";
     (await db).all(sql).then(
         data=>{
-            response.json(data);
+            setTimeout(()=>{    
+                response.json(data);
+            }, 500);
         }
     );
 });
@@ -68,7 +70,6 @@ server.get("/getCartItems/:username", async (req, res)=>{
         res.send(row);
     });
 });
-// ****************************************************************************
 server.get("/getItem/:id", async (req, res)=>{
     var itemId = req.params.id;
     var sql = `select rowid, * from items WHERE rowid=${itemId}`;
@@ -93,15 +94,10 @@ server.get("/delete/:id", async (req, response)=>{
     var itemID = req.params.id;
     var sql = `DELETE FROM items where rowid = ?`;
     var params = [itemID];
-    console.log(itemID);
     (await db).get(sql, params)
     .then(res=>{
-        // setTimeout(()=>{
-        //     response.redirect("/index");
-        // }, 100);
         response.send("deleted")
     });
-    // response.send("d");
 });
 
 server.post("/addComment", async(req, res)=>{
@@ -247,7 +243,28 @@ server.post("/updateItem", async (req, res)=>{
         }
     );
 });
-server.use('/api', api);
+
+server.post("/successfulPurchase", async (req, res)=>{
+    var data = req.body;
+    var items = data.items;
+    var doneUpdate = false;
+    // var itemQuantities = data.itemQuantities;
+    for(let i = 0; i<items.length; i++){
+        var sql = `UPDATE items SET quantity = ? WHERE rowid=?`;
+        var params = [parseInt(items[1][i])-1, parseInt(items[0][i])];
+        (await db).all(sql, params)
+        .then((err, rows)=>{
+            if(err){console.log(err);}
+            
+            if(i == items.length-1){
+                doneUpdate = true;
+            }
+        });
+    }
+    res.send("purchased");
+});
+
+// server.use('/api', api);
 server.use(express.static('public')); // use this middleware before get method.
 
 
