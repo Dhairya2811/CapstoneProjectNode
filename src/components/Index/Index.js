@@ -14,7 +14,6 @@ var  Index = ({count})=> {
     useEffect(()=>{
         setPath(window.location.pathname);
         var pathArr = window.location.pathname.split("/");
-        // console.log(pathArr[1]);
         if(path == "/" && count == 0){
             setCount(1);
             setLoading(true);

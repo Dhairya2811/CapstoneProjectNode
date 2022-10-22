@@ -31,35 +31,50 @@ server.set("view engine", "ejs");
 
 server.use(express.json());
 
-server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", "/myItems", "/editItem/:id", "/payment", "/category/:name"], (req, response)=>{
+var pathArray = [
+    "/", 
+    "/signin", 
+    "/register", 
+    "/addItem", 
+    "/details/:id", 
+    "/myCart", 
+    "/myItems", 
+    "/editItem/:id", 
+    "/payment", 
+    "/category/:name",
+    "/myCart/category/:name",
+];
+server.get(pathArray, (req, response)=>{
         response.render('index');    
 });
 
-server.get(["/index", "/index/category/:name"], async (req, response)=>{
-    var name = req.params.name;
+var sqlQuery = (table, name)=>{
     var sql = "";
     var params = [];
     if(name == undefined || name == "All"){
-        sql = "Select rowid,* from items where quantity > ?";
-        params = [0];
+        sql = `Select rowid,* from ${table} where quantity > ?`;
+        params = [ 0];
     }else if(name == "Lowtohigh"){
-        sql = "SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price";
-        params = [0]
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price`;
+        params = [ 0]
     }else if(name == "Hightolow"){
-        sql = "SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price DESC";
-        params = [0]
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price DESC`;
+        params = [ 0]
     }else{
-        sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ?"
-        params = [0, name]
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? AND category = ?`
+        params = [ 0, name]
     }
+    return [sql, params];
+};
+
+server.get(["/index", "/index/category/:name"], async (req, response)=>{
+    var name = req.params.name;
+    var [sql, params] = sqlQuery("items", name);
     (await db).all(sql, params).then(
         data=>{
             response.json(data);
         }
     );
-});
-server.get("/category/:name", async (req, res)=>{
-    res.send(req.params.name);
 });
 
 server.get("/getComments/:itemid", async(req, res)=>{
@@ -77,10 +92,23 @@ server.get("/getMyItems/:username", async(req, res)=>{
     )
 });
 // ****************************************************************************
-server.get("/getCartItems/:username", async (req, res)=>{
-    var sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${req.params.username}" AND i.quantity > 0`;
+server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"], async (req, res)=>{
+    var userName = req.params.username;
+    var name = req.params.name;
+    var sql = "";
+    if(name == undefined || name == "All"){
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0`;
+    }else if(name == "Lowtohigh"){
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price`;
+    }else if(name == "Hightolow"){
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price DESC`;
+    }else{
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 AND i.category = "${name}"`;
+    }
+    console.log(sql);
     (await db).all(sql)
     .then(row=>{
+        console.log(row);
         res.send(row);
     });
 });

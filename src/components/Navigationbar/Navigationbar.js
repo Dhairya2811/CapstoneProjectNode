@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Container, Nav } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
@@ -6,7 +5,15 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 
 var Navigationbar = ()=>{
     var onDropDown = (e)=>{
-        window.location.href = "/category/"+e;
+        var path = window.location.pathname;
+        var pathArr = window.location.pathname.split("/");
+        if(pathArr[1] == "category" || path == "/"){
+            console.log(path);
+            window.location.href = "/category/"+e;
+        }
+        else{
+            window.location.pathname = pathArr[1]+"/category/"+e;
+        }
     };
     var logout = ()=>{
         sessionStorage.removeItem("username");
