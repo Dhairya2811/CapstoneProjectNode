@@ -20,6 +20,7 @@ class App extends React.Component{
                     <Container>
                         <Routes>
                                 <Route exact path="/" element={<Index />}/>
+                                <Route path="/category/:name" element={<Index />} />
                                 <Route path="/register" element={<Register/>}/>
                                 <Route path="/signin" element={<SignIn/>}/>
                                 <Route path="/addItem" element={<AddItem role="new"/>}/>

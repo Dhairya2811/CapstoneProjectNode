@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-
+import { useLocation } from "react-router-dom";
 import ItemDisplay from "../ItemDisplay/ItemDisplay";
 import LoadingSpinner from "../LoadingComponent/Loading";
 
@@ -9,15 +9,29 @@ var  Index = ({count})=> {
     var [path, setPath] = useState("");
     var [loading, setLoading] = useState(true);
     var [count, setCount] = useState(0);
+    var location = useLocation();
     
     useEffect(()=>{
         setPath(window.location.pathname);
+        var pathArr = window.location.pathname.split("/");
+        // console.log(pathArr[1]);
         if(path == "/" && count == 0){
             setCount(1);
             setLoading(true);
             fetch("/index")
             .then(res => res.json())
             .then(res => {
+                setItems(res);
+                setLoading(false);
+            });
+        }
+        else if(pathArr[1] == "category" && count == 0){
+            setItems([]);
+            setCount(1);
+            setLoading(true);
+            fetch("/index/category/"+pathArr[2])
+            .then(res=>res.json())
+            .then(res=>{
                 setItems(res);
                 setLoading(false);
             });

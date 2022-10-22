@@ -31,19 +31,36 @@ server.set("view engine", "ejs");
 
 server.use(express.json());
 
-server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", "/myItems", "/editItem/:id", "/payment"], (req, response)=>{
+server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", "/myItems", "/editItem/:id", "/payment", "/category/:name"], (req, response)=>{
         response.render('index');    
 });
 
-server.get("/index", async (req, response)=>{
-    var sql = "Select rowid,* from items where quantity>0";
-    (await db).all(sql).then(
+server.get(["/index", "/index/category/:name"], async (req, response)=>{
+    var name = req.params.name;
+    var sql = "";
+    var params = [];
+    if(name == undefined || name == "All"){
+        sql = "Select rowid,* from items where quantity > ?";
+        params = [0];
+    }else if(name == "Lowtohigh"){
+        sql = "SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price";
+        params = [0]
+    }else if(name == "Hightolow"){
+        sql = "SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price DESC";
+        params = [0]
+    }else{
+        sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ?"
+        params = [0, name]
+    }
+    (await db).all(sql, params).then(
         data=>{
             response.json(data);
         }
     );
 });
-
+server.get("/category/:name", async (req, res)=>{
+    res.send(req.params.name);
+});
 
 server.get("/getComments/:itemid", async(req, res)=>{
     var itemid = req.params.itemid;
@@ -259,5 +276,7 @@ server.use(express.static('public')); // use this middleware before get method.
 
 
 server.listen(3000, async ()=>{
+    // (await db).exec("DELETE FROM comment");
+    // (await db).exec("CREATE TABLE items (title text, description text, price NUMBER, image text, imageName TEXT, quantity NUMBER, category TEXT, name TEXT)");
     console.log("Server is listening on port 3000");
 });
