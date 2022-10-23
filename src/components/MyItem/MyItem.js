@@ -6,16 +6,22 @@ import LoadingSpinner from "../LoadingComponent/Loading";
 
 var  MyItem = ({count})=> {
     var [items, setItems] = useState([]);
-    var [path, setPath] = useState("");
     var [loading, setLoading] = useState(true);
-    var [count, setCount] = useState(0);
     
     useEffect(()=>{
-        setPath(window.location.pathname);
-        if(path == "/myItems" && count % 2 == 0){
-            setCount(count+1);
+        var pathArr = window.location.pathname.split("/");
+        var username = sessionStorage.getItem("username");
+        if(pathArr[1] == "myItems" && pathArr[2] == undefined && loading == true){
             setLoading(true);
-            fetch("/getMyItems/"+sessionStorage.getItem("username"))
+            fetch("/getMyItems/"+username)
+            .then(res => res.json())
+            .then(res => {
+                setItems(res);
+                setLoading(false);
+            });
+        }else if(loading == true && pathArr[1] == "myItems" && pathArr[2] == "category"){
+            setLoading(true);
+            fetch("/getMyItems/"+username+"/category/"+pathArr[3])
             .then(res => res.json())
             .then(res => {
                 setItems(res);

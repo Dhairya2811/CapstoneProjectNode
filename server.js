@@ -31,19 +31,52 @@ server.set("view engine", "ejs");
 
 server.use(express.json());
 
-server.get(["/", "/signin", "/register", "/addItem", "/details/:id", "/myCart", "/myItems", "/editItem/:id", "/payment"], (req, response)=>{
+var pathArray = [
+    "/", 
+    "/signin", 
+    "/register", 
+    "/addItem", 
+    "/details/:id", 
+    "/myCart", 
+    "/myItems", 
+    "/editItem/:id", 
+    "/payment", 
+    "/category/:name",
+    "/myCart/category/:name",
+    "/myItems/category/:name"
+];
+server.get(pathArray, (req, response)=>{
         response.render('index');    
 });
 
-server.get("/index", async (req, response)=>{
-    var sql = "Select rowid,* from items where quantity>0";
-    (await db).all(sql).then(
+var sqlQuery = (table, name)=>{
+    var sql = "";
+    var params = [];
+    if(name == undefined || name == "All"){
+        sql = `Select rowid,* from ${table} where quantity > ?`;
+        params = [ 0];
+    }else if(name == "Lowtohigh"){
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price`;
+        params = [ 0]
+    }else if(name == "Hightolow"){
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price DESC`;
+        params = [ 0]
+    }else{
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? AND category = ?`
+        params = [ 0, name]
+    }
+    return [sql, params];
+};
+
+server.get(["/index", "/index/category/:name"], async (req, response)=>{
+    var name = req.params.name;
+    var [sql, params] = sqlQuery("items", name);
+    (await db).all(sql, params).then(
         data=>{
             response.json(data);
         }
     );
 });
-
 
 server.get("/getComments/:itemid", async(req, res)=>{
     var itemid = req.params.itemid;
@@ -51,17 +84,44 @@ server.get("/getComments/:itemid", async(req, res)=>{
     (await db).all(sql).then(data=>res.send(data));
 });
 
-server.get("/getMyItems/:username", async(req, res)=>{
-    var sql = `Select rowid, * from items where name = "${req.params.username}"`;
-    (await db).all(sql).then(
+server.get(["/getMyItems/:username", "/getMyItems/:username/category/:name"], async(req, res)=>{
+    var username = req.params.username;
+    var name = req.params.name;
+    var sql = "";
+    var params = [];
+    if(name == undefined || name == "All"){
+        sql = `Select rowid, * from items where name = ?`;
+        params = [username];
+    }else if(name == "Lowtohigh"){
+        sql = `SELECT rowid, * FROM items WHERE name = ? ORDER BY price`;
+        params = [username];
+    }else if(name == "Hightolow"){
+        sql = `SELECT rowid, * FROM items WHERE name = ? ORDER BY price DESC`;
+        params = [username];
+    }else{
+        sql = `SELECT rowid, * FROM items WHERE name = ? AND category = ?`
+        params = [username, name];
+    }
+    (await db).all(sql, params).then(
         data =>{
             res.json(data);
         }
     )
 });
 // ****************************************************************************
-server.get("/getCartItems/:username", async (req, res)=>{
-    var sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${req.params.username}" AND i.quantity > 0`;
+server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"], async (req, res)=>{
+    var userName = req.params.username;
+    var name = req.params.name;
+    var sql = "";
+    if(name == undefined || name == "All"){
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0`;
+    }else if(name == "Lowtohigh"){
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price`;
+    }else if(name == "Hightolow"){
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price DESC`;
+    }else{
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 AND i.category = "${name}"`;
+    }
     (await db).all(sql)
     .then(row=>{
         res.send(row);
@@ -259,5 +319,7 @@ server.use(express.static('public')); // use this middleware before get method.
 
 
 server.listen(3000, async ()=>{
+    // (await db).exec("DELETE FROM comment");
+    // (await db).exec("CREATE TABLE items (title text, description text, price NUMBER, image text, imageName TEXT, quantity NUMBER, category TEXT, name TEXT)");
     console.log("Server is listening on port 3000");
 });
