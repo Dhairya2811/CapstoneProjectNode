@@ -250,6 +250,7 @@ server.post("/signIn", async (req, response)=>{
             bcrypt.compare(password, user.password, (err, res)=>{
                 if(err){console.log(err);}
                 if(res){
+                    console.log(username)
                     response.send(username);
                 }else{
                     response.send("incorrect password")
