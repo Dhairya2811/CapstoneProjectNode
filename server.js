@@ -334,8 +334,8 @@ server.post("/successfulPurchase", async (req, res)=>{
 
 server.use(express.static('public')); // use this middleware before get method.
 
-
-server.listen(3000, async ()=>{
+var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
+server.listen(server_port, async ()=>{
     // (await db).exec("DELETE FROM comment");
     // (await db).exec("CREATE TABLE items (title text, description text, price NUMBER, image text, imageName TEXT, quantity NUMBER, category TEXT, name TEXT)");
     console.log("Server is listening on port 3000");
