@@ -10,8 +10,16 @@ var MyCart = ()=>{
     var navigate = useNavigate();
 
     useEffect(()=>{
-        if(loading == "true"){
+        var pathArr = window.location.pathname.split("/");
+        if(loading == "true" && pathArr[1] == "myCart" && pathArr[2] == undefined){
             fetch(`/getCartItems/${sessionStorage.getItem("username")}`)
+            .then(res => res.json())
+            .then(res =>{
+                setItems(res);
+                setLoading("false");
+            });
+        }else if(loading == "true" && pathArr[1] == "myCart" && pathArr[2] == "category"){
+            fetch(`/getCartItems/${sessionStorage.getItem("username")}/category/${pathArr[3]}`)
             .then(res => res.json())
             .then(res =>{
                 setItems(res);
