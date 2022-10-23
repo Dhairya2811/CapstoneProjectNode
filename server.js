@@ -1,9 +1,13 @@
-import express from "express";
-import sassMiddleware from "node-sass-middleware";
-import path from "path";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite"; 
-import bcrypt from "bcrypt";
+var express = require("express");
+var sassMiddleware = require("node-sass-middleware");
+var path = require("path");
+var sqlite3 = require("sqlite3");
+var { open } = require("sqlite"); 
+var bcrypt = require("bcrypt");
+const cors = require("cors");
+
+// var express = require("express");
+
 
 // variables
 const saltRound = 10;
@@ -32,7 +36,7 @@ const corsOptions = {
     }
   }
 }
-app.use(cors(corsOptions))
+server.use(cors(corsOptions))
 
 
 server.use(sassMiddleware({
