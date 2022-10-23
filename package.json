@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "build": "nodemon --exec babel-node server.js --ignore public/ --experimental-modules --es-module-specifier-resolution=node --unhandled-rejections=strict app.js",
+    "nodemon": "nodemon --exec babel-node server.js --ignore public/ --experimental-modules --es-module-specifier-resolution=node --unhandled-rejections=strict app.js",
     "webpack": "webpack -w"
   },
   "repository": {
