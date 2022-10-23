@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon --exec babel-node server.js --ignore public/ --experimental-modules --es-module-specifier-resolution=node --unhandled-rejections=strict app.js",
-    "build": "webpack -w"
+    "webpack": "webpack -w"
   },
   "repository": {
     "type": "git",
