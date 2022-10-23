@@ -28,6 +28,7 @@ class App extends React.Component{
                                 <Route path="/myCart" element={<MyCart />} />
                                 <Route path="/myCart/category/:name" element={<MyCart />} />
                                 <Route path="/myItems" element={<MyItem />} />
+                                <Route path="/myItems/category/:name" element={<MyItem />} />
                                 <Route path="/editItem/:id" element={<AddItem role="edit"/>} />
                                 <Route path="/payment" element={<Payment />}/>
                         </Routes>

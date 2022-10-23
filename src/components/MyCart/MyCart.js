@@ -11,7 +11,7 @@ var MyCart = ()=>{
 
     useEffect(()=>{
         var pathArr = window.location.pathname.split("/");
-        if(loading == "true" && pathArr[1] == "myCart" && pathArr[2] == ""){
+        if(loading == "true" && pathArr[1] == "myCart" && pathArr[2] == undefined){
             fetch(`/getCartItems/${sessionStorage.getItem("username")}`)
             .then(res => res.json())
             .then(res =>{

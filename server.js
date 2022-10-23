@@ -43,6 +43,7 @@ var pathArray = [
     "/payment", 
     "/category/:name",
     "/myCart/category/:name",
+    "/myItems/category/:name"
 ];
 server.get(pathArray, (req, response)=>{
         response.render('index');    
@@ -83,9 +84,25 @@ server.get("/getComments/:itemid", async(req, res)=>{
     (await db).all(sql).then(data=>res.send(data));
 });
 
-server.get("/getMyItems/:username", async(req, res)=>{
-    var sql = `Select rowid, * from items where name = "${req.params.username}"`;
-    (await db).all(sql).then(
+server.get(["/getMyItems/:username", "/getMyItems/:username/category/:name"], async(req, res)=>{
+    var username = req.params.username;
+    var name = req.params.name;
+    var sql = "";
+    var params = [];
+    if(name == undefined || name == "All"){
+        sql = `Select rowid, * from items where name = ?`;
+        params = [username];
+    }else if(name == "Lowtohigh"){
+        sql = `SELECT rowid, * FROM items WHERE name = ? ORDER BY price`;
+        params = [username];
+    }else if(name == "Hightolow"){
+        sql = `SELECT rowid, * FROM items WHERE name = ? ORDER BY price DESC`;
+        params = [username];
+    }else{
+        sql = `SELECT rowid, * FROM items WHERE name = ? AND category = ?`
+        params = [username, name];
+    }
+    (await db).all(sql, params).then(
         data =>{
             res.json(data);
         }
@@ -105,10 +122,8 @@ server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"]
     }else{
         sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 AND i.category = "${name}"`;
     }
-    console.log(sql);
     (await db).all(sql)
     .then(row=>{
-        console.log(row);
         res.send(row);
     });
 });

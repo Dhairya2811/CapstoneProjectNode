@@ -43,7 +43,6 @@ var AddItem = ({role})=>{
                         body: JSON.stringify({title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
                     }).then(res => res.text())
                     .then(res => {
-                        // console.log(res);
                         if(res == "inserted"){
                             setInserted(true)
                         }else{
@@ -93,7 +92,6 @@ var AddItem = ({role})=>{
                         body: JSON.stringify({id: data.rowid,title: title, description: description, price:price, image:imageData, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
                     }).then(res => res.text())
                     .then(res => {
-                        console.log(res);
                         if(res == "updated"){
                             navigate("/");
                             setInserted(true);
@@ -104,7 +102,6 @@ var AddItem = ({role})=>{
         }
     }
     useEffect(()=>{
-        console.log(count);
         var urlArr = (window.location.pathname.split("/"));
         if(role == 'edit' && count == 0){
             setCount(1);            
@@ -128,15 +125,7 @@ var AddItem = ({role})=>{
                 }, 100);
             });
         }else if(role == "new"){
-            setLoading(false);
-            // document.getElementById("newItemTitle").value = "";
-            // document.getElementById("newItemDescription").value = "";
-            // document.getElementById("newItemPrice").value = "";
-            // document.getElementById("displayImage").style.display = "none";
-            // document.getElementById("displayImage").src = "";
-            // document.getElementById("newItemQuantity").value = "";
-            // document.getElementById("newItemCategory").value = "";     
-            // document.getElementById("newItemImage").required = true;             
+            setLoading(false);            
         }
     });
     var returnDiv = ()=>{
@@ -177,10 +166,10 @@ var AddItem = ({role})=>{
                     </div><br />
                     <div>
                         <label> Category </label>
-                        <select id="newItemCategory" className="form-control">
+                        <select id="newItemCategory" className="form-control" defaultValue="Fashion">
                             <option value="Toys">Toys</option>
                             <option value="Home">Home</option>
-                            <option value="Fashion" selected>Fashion</option>
+                            <option value="Fashion">Fashion</option>
                             <option value="Electronics">Electronics</option>
                         </select>
                     </div><br />
