@@ -1,9 +1,13 @@
-import express from "express";
-import sassMiddleware from "node-sass-middleware";
-import path from "path";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite"; 
-import bcrypt from "bcrypt";
+var express = require("express");
+var sassMiddleware = require("node-sass-middleware");
+var path = require("path");
+var sqlite3 = require("sqlite3");
+var { open } = require("sqlite"); 
+var bcrypt = require("bcrypt");
+const cors = require("cors");
+
+// var express = require("express");
+
 
 // variables
 const saltRound = 10;
@@ -19,20 +23,20 @@ const db = open({
 const server = express();
 server.locals.db = db;
 
-const whitelist = ['http://localhost:3000', 'http://localhost:8080', 'https://mystoreproject.herokuapp.com/']
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log("** Origin of request " + origin)
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      console.log("Origin acceptable")
-      callback(null, true)
-    } else {
-      console.log("Origin rejected")
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-app.use(cors(corsOptions))
+// const whitelist = ['http://localhost:3000', 'http://localhost:8080', 'https://mystoreproject.herokuapp.com/']
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     console.log("** Origin of request " + origin)
+//     if (whitelist.indexOf(origin) !== -1 || !origin) {
+//       console.log("Origin acceptable")
+//       callback(null, true)
+//     } else {
+//       console.log("Origin rejected")
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+// server.use(cors(corsOptions))
 
 
 server.use(sassMiddleware({
@@ -246,6 +250,7 @@ server.post("/signIn", async (req, response)=>{
             bcrypt.compare(password, user.password, (err, res)=>{
                 if(err){console.log(err);}
                 if(res){
+                    console.log(username)
                     response.send(username);
                 }else{
                     response.send("incorrect password")

@@ -60,7 +60,7 @@ var Navigationbar = ()=>{
     return (
         <Navbar fixed="top" style={{backgroundColor: "white"}}>
             <Container>
-                <Navbar.Brand as={NavLink} to="/">App Name</Navbar.Brand>
+                <Navbar.Brand as={NavLink} to="/" style={{fontWeight: "bold"}}>My Store</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         {returnNav}
