@@ -47,7 +47,6 @@ class SignIn extends Component{
                     errdiv.innerHTML = "Incorrect Password.";
                 }else{
                     console.log("correct");
-                    cosnole.log(res);
                     let errdiv = document.getElementById("err");
                     errdiv.style.display = "none";
                     sessionStorage.setItem("username", res);
