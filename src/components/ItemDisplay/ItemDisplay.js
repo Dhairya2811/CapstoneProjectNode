@@ -8,12 +8,25 @@ var ItemDisplay = ({item}) => {
     const clickFunction = ()=> {
         navigate(`/details/${item.rowid}`);
     };
+
+    var cropImage = (imgPath)=>{
+        const originalImage = new Image();
+        originalImage.src = imgPath;
+        const canvas = document.getElementsByClassName('displayImageCanvas');
+        const ctx = canvas.getContext('2d');
+        originalImage.addEventListener("load", ()=>{
+            canvas.width = "200px";
+            canvas.height = "200px";
+            ctx.drawImage(originalImage, 0, 0, 200, 200, 0, 0, 200, 200);
+        });
+    };
+
     return(
-        <div className="itemDisplayDiv" style={{zIndex: "1"}} onClick={clickFunction} >
-            <div className="displayItemOuter" style={{height: "80%", width:"100%", display: "flex", justifyContent:"center", paddingTop:"auto"}}>
-                <img src={item.image} className="displayItemImg" style={{width: "20em", maxWidth: "20em", borderRadius: "10px 10px 0px 0px"}}/>
+        <div className="itemDisplayDiv" onClick={clickFunction} >
+            <div className="displayItemOuter">
+                <img src={item.image} className="displayItemImg" />
             </div>
-            <div className="titlePriceDiv" style={{height: "20%", paddingTop: "5px"}}>
+            <div className="titlePriceDiv">
                 <h3>{item.title}</h3>
                 <span className="price">$ {item.price}</span>
             </div>

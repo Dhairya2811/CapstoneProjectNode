@@ -19,12 +19,28 @@
         background-color: rgb(240, 239, 239);
         border-radius: 10px;
         bottom: 0px;
+        z-index: 1;
         .titlePriceDiv{
+            height: 20%;
+            padding-top: 5px;
             position: static;
             bottom: 0;
             width: 100%;
             text-align: center;
             margin-bottom: 0px;
+        }
+        .displayItemOuter{
+            height: 80%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: auto;
+            .displayItemImg{
+                width: 20em;
+                height: 20em;
+                border-radius: 10px 10px 0 0;
+                object-fit: cover;
+            }
         }
     }
     .commentsDiv{
