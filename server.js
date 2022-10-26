@@ -23,22 +23,6 @@ const db = open({
 const server = express();
 server.locals.db = db;
 
-// const whitelist = ['http://localhost:3000', 'http://localhost:8080', 'https://mystoreproject.herokuapp.com/']
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     console.log("** Origin of request " + origin)
-//     if (whitelist.indexOf(origin) !== -1 || !origin) {
-//       console.log("Origin acceptable")
-//       callback(null, true)
-//     } else {
-//       console.log("Origin rejected")
-//       callback(new Error('Not allowed by CORS'))
-//     }
-//   }
-// }
-// server.use(cors(corsOptions))
-
-
 server.use(sassMiddleware({
     src: path.join(__dirname, "scss"),
     dest: path.join(__dirname, "public"),
@@ -313,7 +297,6 @@ server.post("/updateItem", async (req, res)=>{
     var imageName = data.imageName;
     var name = data.username;
     var sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? , category = ?, name = ? WHERE rowid = ?";
-    // var sql = "INSERT INTO items(title, description, price, image, imageName, quantity, category, name) Values (?, ?, ?, ?, ?, ?, ?, ?)";
     var params = [title, description, price,image, imageName, quantity, category, name, id];
     (await db).all(sql, params).then(
         (err, rows)=>{
@@ -341,7 +324,5 @@ server.use(express.static('public')); // use this middleware before get method.
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // (await db).exec("DELETE FROM comment");
-    // (await db).exec("CREATE TABLE items (title text, description text, price NUMBER, image text, imageName TEXT, quantity NUMBER, category TEXT, name TEXT)");
     console.log("Server is listening on port 3000");
 });
