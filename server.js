@@ -322,7 +322,7 @@ server.post("/successfulPurchase", async (req, res)=>{
 
 server.use(express.static('public')); // use this middleware before get method.
 
-var server_port = process.env.YOUR_PORT || process.env.PORT || 4200;
+var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
     console.log("Server is listening on port 4200");
 });
