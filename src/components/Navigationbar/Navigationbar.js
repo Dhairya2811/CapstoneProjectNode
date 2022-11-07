@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Container, Nav } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -47,7 +47,7 @@ var Navigationbar = ()=>{
     if(username === null){
         returnNav = <Nav id="NavbarBody" className="justify-content-end flex-grow-1 pe-3">
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/" onClick={showChange}>Home</Nav.Link>
-            <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/register" $font-family="Nunito" onClick={showChange} >Register</Nav.Link>
+            <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/register" onClick={showChange} >Register</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem"  as={NavLink} to="/signin" onClick={showChange}>Sign In</Nav.Link>
             {categoryShow == true ? 
             <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
@@ -83,7 +83,7 @@ var Navigationbar = ()=>{
         rightSide=<NavDropdown id="username_Dropdown" title={username} className="NavFonts">
             <NavDropdown.Item className="username_Dropdown_items NavFonts"
             id="logout" onClick={logout} >Log Out</NavDropdown.Item>
-            <NavDropdown.Item className="username_Dropdown_items NavFonts" id="myCart" as={NavLink} to="/myCart" $font-family="Nunito" >My Cart</NavDropdown.Item>
+            <NavDropdown.Item className="username_Dropdown_items NavFonts" id="myCart" as={NavLink} to="/myCart">My Cart</NavDropdown.Item>
         </NavDropdown>
     }
 
@@ -91,6 +91,7 @@ var Navigationbar = ()=>{
         <>
             <Navbar variant="dark" id="Navbar" expand='true' className="mb-3" style={{backgroundColor: theme_color, fontFamily: "Nunito"}}>
                 <div id="NavBar_leftside">
+                    {/* menu button */}
                     <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-true`} id="navbar_menubtn" onClick={showChange}/>
                     {/* Off Canvas  */}
                     <Navbar.Offcanvas show={show}
@@ -109,19 +110,20 @@ var Navigationbar = ()=>{
                         {returnNav}
                     </Offcanvas.Body>
                     </Navbar.Offcanvas>
-                    
                     {/* add the my store logo */}
-                    <Navbar.Brand as={NavLink} to="/"><img className = "navbar_image"  src={site_logo} /></Navbar.Brand>
-                    <Form className="d-flex" id="navbar_search_form">
-                        <Form.Control
-                            type="search"
-                            placeholder="Search"
-                            className="me-2"
-                            aria-label="Search"
-                            id="search_NavbarFormInput"
-                        />
-                        <Button className="btn" id="search_NavbarFormBtn"><i class="fa fa-search"></i></Button>
-                    </Form>
+                    <div id="name_form">
+                        <Navbar.Brand as={NavLink} to="/"><img className = "navbar_image"   src={site_logo} /></Navbar.Brand>
+                        <Form className="d-flex" id="navbar_search_form">
+                            <Form.Control
+                                type="search"
+                                placeholder="Search"
+                                className="me-2"
+                                aria-label="Search"
+                                id="search_NavbarFormInput"
+                            />
+                            <Button className="btn" id="search_NavbarFormBtn"><i className="fa fa-search"></i></Button>
+                        </Form>
+                    </div>
                 </div>
                 <div id="NavBar_rightside">
                     <div>

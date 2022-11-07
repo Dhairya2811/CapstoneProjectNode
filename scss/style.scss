@@ -5,23 +5,27 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     #NavBar_leftside{
-        display: flex;
+        display: grid;
+        grid-template-columns: 3em auto;
         #navbar_menubtn{
             border: none;
             font-weight: bolder;
         }
-        #navbar_search_form{
-            min-width: 30em;
-            padding-top: 1em;
-            #search_NavbarFormInput{
-                border-radius: 0.25rem 0 0 0.25rem;
-            }
-            #search_NavbarFormBtn{
-                border-radius: 0 0.25rem 0.25rem 0;
-                margin-left: -10px;
-                background-color: #E8F0F4;
-                border-color: transparent;
-                color: #003A56;
+        #name_form{
+            display: flex;
+            #navbar_search_form{
+                min-width: 30em;
+                padding-top: 1em;
+                #search_NavbarFormInput{
+                    border-radius: 0.25rem 0 0 0.25rem;
+                }
+                #search_NavbarFormBtn{
+                    border-radius: 0 0.25rem 0.25rem 0;
+                    margin-left: -10px;
+                    background-color: #E8F0F4;
+                    border-color: transparent;
+                    color: #003A56;
+                }
             }
         }
     }
