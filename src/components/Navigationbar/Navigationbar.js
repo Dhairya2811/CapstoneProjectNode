@@ -6,17 +6,24 @@ import Form from 'react-bootstrap/Form';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import images from './images.json';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 
 var Navigationbar = ()=>{
     const [show, setShow] = useState(false);
+    const [categoryShow, setCategoryShow] = useState(false);
     var site_logo = images.name_logo;
     var theme_color= "#003A56";
     var username = sessionStorage.getItem("username");
     var returnNav;
     var rightSide;
+
+    useEffect(()=>{
+        var path = window.location.pathname;
+        if(path == "/" || path == "/myItems" || path == "/myCart"){setCategoryShow(true)}
+        else{setCategoryShow(false)}
+    }, [window.location.pathname]);
 
     var onDropDown = (e)=>{
         var path = window.location.pathname;
@@ -42,6 +49,7 @@ var Navigationbar = ()=>{
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/" onClick={showChange}>Home</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/register" $font-family="Nunito" onClick={showChange} >Register</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem"  as={NavLink} to="/signin" onClick={showChange}>Sign In</Nav.Link>
+            {categoryShow == true ? 
             <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
                 <NavDropdown.Item  className="NavFonts NavbarLink Navitem" eventKey="All">All</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Toys">Toys</NavDropdown.Item>
@@ -51,7 +59,7 @@ var Navigationbar = ()=>{
                 <NavDropdown.Divider style={{color: "white"}}/>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Lowtohigh">Price: Low to High</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Hightolow">Price: Hign to Low</NavDropdown.Item>
-            </NavDropdown>
+            </NavDropdown> : <></>}
         </Nav>;
         rightSide = <></>
     }else{
@@ -60,8 +68,8 @@ var Navigationbar = ()=>{
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/myItems" onClick={showChange}>My Item</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/addItem" onClick={showChange}>Add Item</Nav.Link>
             {/* <Nav.Link as={NavLink} to="#" onClick={logout}>Log Out</Nav.Link> */}
-            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown} 
-            id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
+            {categoryShow == true ? 
+            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
                 <NavDropdown.Item  className="NavFonts NavbarLink Navitem" eventKey="All">All</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Toys">Toys</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
@@ -70,7 +78,7 @@ var Navigationbar = ()=>{
                 <NavDropdown.Divider style={{color: "white"}}/>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Lowtohigh">Price: Low to High</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Hightolow">Price: Hign to Low</NavDropdown.Item>
-            </NavDropdown>
+            </NavDropdown> : <></>}
         </Nav>
         rightSide=<NavDropdown id="username_Dropdown" title={username} className="NavFonts">
             <NavDropdown.Item className="username_Dropdown_items NavFonts"
