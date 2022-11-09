@@ -4,18 +4,15 @@ import ItemDisplay from "../ItemDisplay/ItemDisplay";
 import LoadingSpinner from "../LoadingComponent/Loading";
 
 
-var  Index = ({count})=> {
+var  Index = ()=> {
     var [items, setItems] = useState([]);
-    var [path, setPath] = useState("");
     var [loading, setLoading] = useState(true);
     var [count, setCount] = useState(0);
     var location = useLocation();
     
     useEffect(()=>{
-        setPath(window.location.pathname);
-        var pathArr = window.location.pathname.split("/");
-        if(path == "/" && count == 0){
-            setCount(1);
+        var pathArr = location.pathname.split("/");
+        if(location.pathname == "/"){
             setLoading(true);
             fetch("/index")
             .then(res => res.json())
@@ -24,9 +21,8 @@ var  Index = ({count})=> {
                 setLoading(false);
             });
         }
-        else if(pathArr[1] == "category" && count == 0){
+        else if(pathArr[1] == "category"){
             setItems([]);
-            setCount(1);
             setLoading(true);
             fetch("/index/category/"+pathArr[2])
             .then(res=>res.json())
@@ -34,8 +30,17 @@ var  Index = ({count})=> {
                 setItems(res);
                 setLoading(false);
             });
+        }else if(pathArr[1] == "search"){
+            setItems([]);
+            setLoading(true);
+            fetch("/index/search/"+pathArr[2])
+            .then(res=>res.json())
+            .then(res=>{
+                setItems(res);
+                setLoading(false);
+            });
         }
-    });
+    }, [location]);
     return(
         <div>
             <div className="displayitems">
