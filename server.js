@@ -48,7 +48,8 @@ var pathArray = [
     "/payment", 
     "/category/:name",
     "/myCart/category/:name",
-    "/myItems/category/:name"
+    "/myItems/category/:name",
+    "/search/:search_by"
 ];
 server.get(pathArray, (req, response)=>{
         response.render('index');    
@@ -82,6 +83,14 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
         }
     );
 });
+server.get("/index/search/:search_by", async(req, res)=>{
+    var name = req.params.search_by;
+    var sql = `SELECT rowid, * FROM items WHERE title LIKE ? OR category LIKE ? OR description LIKE ?`;
+    var params = ['%'+name+'%', '%'+name+'%', '%'+name+'%'];
+    (await db).all(sql, params).then(
+        data=>res.json(data)
+    )
+})
 
 server.get("/getComments/:itemid", async(req, res)=>{
     var itemid = req.params.itemid;
@@ -324,5 +333,5 @@ server.use(express.static('public')); // use this middleware before get method.
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    console.log("Server is listening on port 4200");
+    console.log("Server is listening on port 3000");
 });
