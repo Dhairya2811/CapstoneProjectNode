@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Nav } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
 import Button from 'react-bootstrap/Button';
@@ -13,28 +13,56 @@ import { useState, useEffect } from "react";
 var Navigationbar = ()=>{
     const [show, setShow] = useState(false);
     const [categoryShow, setCategoryShow] = useState(false);
+    const [searchShow, setSearchShow] = useState(false);
     var site_logo = images.name_logo;
     var theme_color= "#003A56";
     var username = sessionStorage.getItem("username");
     var returnNav;
     var rightSide;
+    var location = useLocation();
 
     useEffect(()=>{
         var path = window.location.pathname;
-        if(path == "/" || path == "/myItems" || path == "/myCart"){setCategoryShow(true)}
-        else{setCategoryShow(false)}
-    }, [window.location.pathname]);
+        var pathArr = window.location.pathname.split("/");
+        if(path == "/" || path == "/myItems" || path == "/myCart"){
+            setCategoryShow(true);
+            setSearchShow(true);
+        }else if(pathArr[1] == "category"){
+            setSearchShow(false);
+            setCategoryShow(true);
+        }else if(pathArr[1] == "search"){
+            setSearchShow(true);
+            setCategoryShow(false);
+        }
+        else{
+            setSearchShow(false);
+            setCategoryShow(false);
+        }
+    }, [location]);
 
     var onDropDown = (e)=>{
         var path = window.location.pathname;
         var pathArr = window.location.pathname.split("/");
         if(pathArr[1] == "category" || path == "/"){
-            console.log(path);
             window.location.href = "/category/"+e;
         }
         else{
             window.location.pathname = pathArr[1]+"/category/"+e;
         }
+    };
+    var searchItem = (event)=>{
+        var search = document.getElementById("search_NavbarFormInput");
+        
+        var search_by = search.value;
+        var path = window.location.pathname;
+        var pathArr = window.location.pathname.split("/");
+        if(pathArr[1] == "search" || path == "/"){
+            window.location.href = "/search/"+search_by;
+        }
+        else{
+            window.location.pathname = pathArr[1]+"/search/"+search_by;
+        }
+        event.preventDefault();
     };
     var logout = ()=>{
         sessionStorage.removeItem("username");
@@ -111,19 +139,22 @@ var Navigationbar = ()=>{
                     </Offcanvas.Body>
                     </Navbar.Offcanvas>
                     {/* add the my store logo */}
-                    <div id="name_form">
-                        <Navbar.Brand as={NavLink} to="/"><img className = "navbar_image"   src={site_logo} /></Navbar.Brand>
-                        <Form className="d-flex" id="navbar_search_form">
-                            <Form.Control
-                                type="search"
-                                placeholder="Search"
-                                className="me-2"
-                                aria-label="Search"
-                                id="search_NavbarFormInput"
-                            />
-                            <Button className="btn" id="search_NavbarFormBtn"><i className="fa fa-search"></i></Button>
-                        </Form>
-                    </div>
+                    
+                        <div id="name_form"> 
+                            <Navbar.Brand as={NavLink} to="/" ><img className = "navbar_image" src={site_logo}/></Navbar.Brand>
+                            {searchShow == true ?
+                                <Form className="d-flex" id="navbar_search_form" onSubmit={searchItem}>
+                                    <Form.Control
+                                        type="search"
+                                        placeholder="Search"
+                                        className="me-2"
+                                        aria-label="Search"
+                                        id="search_NavbarFormInput"
+                                    />
+                                    <Button className="btn" id="search_NavbarFormBtn" onClick={searchItem}><i className="fa fa-search"></i></Button>
+                                </Form> :
+                            <></> }
+                        </div>
                 </div>
                 <div id="NavBar_rightside">
                     <div>
