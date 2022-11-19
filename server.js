@@ -59,16 +59,16 @@ var sqlQuery = (table, name)=>{
     var sql = "";
     var params = [];
     if(name == undefined || name == "All"){
-        sql = `Select rowid,* from ${table} where quantity > ?`;
+        sql = `Select rowid,* from ${table} where quantity > ?ORDER BY rowid DESC`;
         params = [ 0];
     }else if(name == "Lowtohigh"){
-        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price`;
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price, rowid DESC`;
         params = [ 0]
     }else if(name == "Hightolow"){
         sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price DESC`;
         params = [ 0]
     }else{
-        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? AND category = ?`
+        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? AND category = ? ORDER BY rowid DESC`
         params = [ 0, name]
     }
     return [sql, params];

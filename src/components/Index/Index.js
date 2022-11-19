@@ -7,7 +7,6 @@ import LoadingSpinner from "../LoadingComponent/Loading";
 var  Index = ()=> {
     var [items, setItems] = useState([]);
     var [loading, setLoading] = useState(true);
-    var [count, setCount] = useState(0);
     var location = useLocation();
     
     useEffect(()=>{
