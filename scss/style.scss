@@ -1,6 +1,8 @@
+$padding_r_l_desktop: 0 100px;
+$body_back_color: E8F0F4;
 // Navigation bar stying 
 #Navbar{
-    padding: 0 100px;
+    padding: $padding_r_l_desktop;
     height: 70px;
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -126,9 +128,58 @@
 // ######################################################
 .body{
     margin-top: -16px;
-    padding-top: 3.9em;
     font-family: "Nunito"!important;
-    background-color: E8F0F4;
+    background-color: $body_back_color;
+    color: #003A56;
+// #######################################################
+// ********************* INDEX ***************************
+    #index_page{   
+        padding: $padding_r_l_desktop;
+        // ******************* Ad *******************
+        #ad_div{
+            display: grid;
+            grid-template-columns: 52% 48%;
+            padding: 30px 1em;
+            height: 60%;
+            .ad_video{
+                height: auto;
+                width: 100%;
+                iframe{
+                    border-radius: 20px;
+                }
+            }
+            .ad_text{
+                margin-left: 100px;
+                margin-top: -1em;
+                display: flex;
+                align-items:center;
+                div{    
+                    .ad_title{
+                        margin-top: -1.5em;
+                        font-weight: bold;
+                        margin-bottom: 1.5em;
+                    }
+                    flex-flow: column;
+                    .ad_desc{
+                        font-weight: bold;
+                        font-size: 1.35em;
+                        inline-size: 100%;
+                        overflow-wrap: break-word;
+                    }
+                    .ad_go_btn_div{
+                        margin-top: 1em;
+                        text-align: center;
+                        .ad_go_btn{
+                            padding: 0.375rem 2em;
+                            background-color: #003A56 !important; 
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+        }
+    }
+// #######################################################
     .FormPage{
         height: 50%;
         min-height: 27em;
