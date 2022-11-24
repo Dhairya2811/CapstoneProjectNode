@@ -65,8 +65,9 @@ var  Index = ()=> {
                 </div>
             </div>
             {/* display all the items */}
+            {console.log(items)}
             <div className="displayitems">
-                {loading == false ? (items).map((item, index)=>{
+                {loading == false ? (items.deals).map((item, index)=>{
                     return <ItemDisplay item = {item} key={index} />
                 }) : <LoadingSpinner /> }
             </div>
