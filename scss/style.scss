@@ -136,6 +136,7 @@ $body_back_color: E8F0F4;
 // ********************* INDEX ***************************
     #index_page{   
         padding: $padding_r_l_desktop;
+        min-height: 90vh;
         // ******************* Ad *******************
         #ad_div{
             display: grid;
@@ -180,6 +181,15 @@ $body_back_color: E8F0F4;
             }
         }
         .displayCategoryFilter{
+            .displayCategoryFilterHead{
+                padding: 30px 0;
+                .categoryFilterH2{
+                    font-weight: bold;
+                }
+                .categoryFilterName{
+                    font-size: 0.8em;
+                }
+            }
             .categoryDisplay{
                 display: flex;
                 flex-wrap: wrap;
@@ -197,7 +207,7 @@ $body_back_color: E8F0F4;
                         text-align: center;
                         display: block;
                         padding-bottom: 10px;
-                        margin-top: -5px;
+                        margin-top: 5px;
                         .itemDealsText{
                             font-weight: bold;
                             font-size: 0.9em;
@@ -225,7 +235,10 @@ $body_back_color: E8F0F4;
             }
         }
         .subtitleAtBottom{
-            margin-top: 5em;
+            position: absolute;
+            right: 30vw;
+            left: 30vw;
+            z-index: 2;
             .subtitle {
                 margin: 0 0 5px 0;
             }
@@ -244,7 +257,7 @@ $body_back_color: E8F0F4;
                 height: 5px;
                 border-top: 1px solid #004b70;
                 top: 0;
-                width: 600px;
+                width: 30vw;
             }
             .fancy span:before {
                 right: 100%;
@@ -336,7 +349,7 @@ $body_back_color: E8F0F4;
                 text-align: center;
                 display: block;
                 padding-bottom: 10px;
-                margin-top: -5px;
+                margin-top: 5px;
                 .itemDealsText{
                     font-weight: bold;
                     font-size: 0.9em;
