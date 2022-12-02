@@ -1,6 +1,8 @@
+$padding_r_l_desktop: 0 100px;
+$body_back_color: E8F0F4;
 // Navigation bar stying 
 #Navbar{
-    padding: 0 100px;
+    padding: $padding_r_l_desktop;
     height: 70px;
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -54,7 +56,7 @@
     from {
         background-size:0;
         background-color: transparent;
-        color: white;
+        color: #E8F0F4;
     }
     to {
         background-size: 100%;
@@ -90,22 +92,19 @@
     animation-fill-mode: forwards;
     animation-duration: 2s;
 }
-#username_Dropdown::after{
-    content: none;
-}
 #username_Dropdown{
-    color: white;
+    color: #E8F0F4;
     font-weight: bold;
     font-size: larger;
     a{
-        color: white;
+        color: #E8F0F4;
         font-weight: bold;
         font-size: larger;
     }
 }
 
 .NavbarLink, #offcanvasNavbarDropdown-expand-true{
-    color: white;
+    color: #E8F0F4;
     font-weight: bold;
     font-size: larger;
     
@@ -129,9 +128,135 @@
 // ######################################################
 .body{
     margin-top: -16px;
-    padding-top: 3.9em;
     font-family: "Nunito"!important;
-    background-color: E8F0F4;
+    background-color: $body_back_color;
+    color: #003A56;
+    padding-bottom: 5px;
+// #######################################################
+// ********************* INDEX ***************************
+    #index_page{   
+        padding: $padding_r_l_desktop;
+        // ******************* Ad *******************
+        #ad_div{
+            display: grid;
+            grid-template-columns: 52% 48%;
+            padding: 30px 1em;
+            height: 60%;
+            .ad_video{
+                height: auto;
+                width: 100%;
+                iframe{
+                    border-radius: 20px;
+                }
+            }
+            .ad_text{
+                margin-left: 100px;
+                margin-top: -1em;
+                display: flex;
+                align-items:center;
+                div{    
+                    .ad_title{
+                        margin-top: -1.5em;
+                        font-weight: bold;
+                        margin-bottom: 1.5em;
+                    }
+                    flex-flow: column;
+                    .ad_desc{
+                        font-weight: bold;
+                        font-size: 1.35em;
+                        inline-size: 100%;
+                        overflow-wrap: break-word;
+                    }
+                    .ad_go_btn_div{
+                        margin-top: 1em;
+                        text-align: center;
+                        .ad_go_btn{
+                            padding: 0.375rem 2em;
+                            background-color: #003A56 !important; 
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+        }
+        .displayCategoryFilter{
+            .categoryDisplay{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+                .itemDisplayDiv{
+                    width:185px;
+                    border: 1px solid rgb(214, 214, 214);
+                    background-color: rgb(255, 255, 255);
+                    border-radius: 10px;
+                    bottom: 0px;
+                    z-index: 1;
+                    .titlePriceDiv{
+                        width: 100%;
+                        text-align: center;
+                        display: block;
+                        padding-bottom: 10px;
+                        margin-top: -5px;
+                        .itemDealsText{
+                            font-weight: bold;
+                            font-size: 0.9em;
+                            background-color: red;
+                            color: #E8F0F4;
+                            border-radius: 5px;
+                            width: fit-content;
+                            padding: 2px 1em;
+                            text-align: center;
+                            margin: 5px auto;
+                        }
+                        .itemtitleText{
+                            font-size: 17px;
+                            font-weight: bold;
+                        }
+                    }
+                    .displayItemOuter{
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        padding-top: auto;
+                        
+                    }
+                }
+            }
+        }
+        .subtitleAtBottom{
+            margin-top: 5em;
+            .subtitle {
+                margin: 0 0 5px 0;
+            }
+            .fancy {
+                line-height: 0.5;
+                text-align: center;
+            }
+            .fancy span {
+                display: inline-block;
+                position: relative;  
+            }
+            .fancy span:before,
+            .fancy span:after {
+                content: "";
+                position: absolute;
+                height: 5px;
+                border-top: 1px solid #004b70;
+                top: 0;
+                width: 600px;
+            }
+            .fancy span:before {
+                right: 100%;
+                margin-right: 15px;
+            }
+            .fancy span:after {
+                left: 100%;
+                margin-left: 15px;
+            }
+        }
+    }
+// #######################################################
     .FormPage{
         height: 50%;
         min-height: 27em;
@@ -139,42 +264,105 @@
             width: 60%;
         }
     }
+    // display items
     .displayItems{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2em;
-        justify-content: center;
-    }
-    .itemDisplayDiv{
-        width:fit-content;
-        border: 1px solid rgb(214, 214, 214);
-        background-color: rgb(240, 239, 239);
-        border-radius: 10px;
-        bottom: 0px;
-        z-index: 1;
-        .titlePriceDiv{
-            height: 20%;
-            padding-top: 5px;
-            position: static;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            margin-bottom: 0px;
+        .showAllDiv{
+            padding: 0 5% 1em ;
+            text-align: end;
+            a{
+                font-weight: bolder;
+                color: #E8F0F4;
+            }
         }
-        .displayItemOuter{
-            height: 80%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding-top: auto;
-            .displayItemImg{
-                width: 20em;
-                height: 20em;
-                border-radius: 10px 10px 0 0;
-                object-fit: cover;
+        .displayBestDeals{
+            margin: 0 -100px;
+            background-color: #003A56;
+            z-index: -1;
+            background-repeat: no-repeat;
+            background-size: 100% 51%;
+            padding: 2em 100px 4.8em ;
+            .bestDealsTitle{
+                width: 100%;
+                text-align: center;
+                img{
+                    width: 366px;
+                }
+                margin-bottom: 40px;
+            }
+            .bestDealsItems{
+                display: flex;
+                flex-wrap:wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+        }
+        .displayCategory{
+            background-color: #E0EEEC;
+            padding: 10px;
+            margin-top: 2em;
+            .displayByCategory{
+                margin-bottom: 3em;
+            }
+            .categoryTitleDiv{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                h2{
+                    font-weight: bold;
+                    padding-left: 5%;
+                }
+                .showAllDiv{
+                    text-align: end;
+                    a{
+                        color: #003A56;
+                    }
+                }
+            }
+            .categoryDisplay{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+        }
+        .itemDisplayDiv{
+            width:185px;
+            border: 1px solid rgb(214, 214, 214);
+            background-color: rgb(255, 255, 255);
+            border-radius: 10px;
+            bottom: 0px;
+            z-index: 1;
+            .titlePriceDiv{
+                width: 100%;
+                text-align: center;
+                display: block;
+                padding-bottom: 10px;
+                margin-top: -5px;
+                .itemDealsText{
+                    font-weight: bold;
+                    font-size: 0.9em;
+                    background-color: red;
+                    color: #E8F0F4;
+                    border-radius: 5px;
+                    width: fit-content;
+                    padding: 2px 1em;
+                    text-align: center;
+                    margin: 5px auto;
+                }
+                .itemtitleText{
+                    font-size: 17px;
+                    font-weight: bold;
+                }
+            }
+            .displayItemOuter{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                padding-top: auto;
+                
             }
         }
     }
+    // *********************************
     .commentsDiv{
         margin: 2em 3em 0em 3em;
         .commentHeading{
