@@ -223,15 +223,21 @@ server.get("/getItem/:id", async (req, res)=>{
     .then(
         async (rows)=>{
             // rows["incart"] = true;
-            (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
-            .then(internalrows =>{
-                var inCart = false;
-                if ((internalrows).length !== 0){
-                    inCart = true;
-                }
-                rows["inCart"] = inCart;
-                res.send(rows);
-            });
+            if(rows !== undefined){
+                (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
+                .then(internalrows =>{
+                    var inCart = false;
+                    if ((internalrows).length !== 0){
+                        inCart = true;
+                    }
+                    rows["inCart"] = inCart;
+                    console.log(rows);
+                    res.send(rows);
+                });
+            }else{
+                let row = {"item": "undefined"}
+                res.send(row);
+            }
         }
     );
 });
