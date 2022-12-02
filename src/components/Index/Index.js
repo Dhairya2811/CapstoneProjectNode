@@ -43,9 +43,31 @@ var  Index = ()=> {
             });
         }
     }, [location]);
+    var categoryHead = ()=>{
+        if(items.index == "Price: low to high"){
+            return(
+                <>
+                    <h2><span className="categoryFilterH2">Price: </span><span className="categoryFilterName">Low to High</span></h2>
+                </>
+            );
+        }else if(items.index == "Price: high to low"){
+            return(
+                <>
+                    <h2><span className="categoryFilterH2">Price: </span><span className="categoryFilterName">High to Low</span></h2>
+                </>
+            );
+        }else{
+            return(
+                <>
+                    <h2><span className="categoryFilterH2">Category: </span><span className="categoryFilterName">{items.index}</span></h2>
+                </>
+            );
+        }
+
+    }
     return(
         <>{loading == false ?  
-            <div id="index_page">
+            <div id="index_page" >
                 {items.index == true ?
                     <>
                     {/* display ad */}
@@ -151,19 +173,22 @@ var  Index = ()=> {
                                 </div>
                             </div>
                         </div>
-                    </div></>
+                    </div>
+                    <div className="subtitleAtBottom" style={{marginTop: document.height}}>
+                        <p className="subtitle fancy"><span>Designed and developed by Dhairya Soni</span></p>
+                    </div>
+                    </>
                 :
                 <div className="displayCategoryFilter">
-                    <h1>Category filter</h1>
+                    <div className="displayCategoryFilterHead">
+                        {categoryHead()}
+                    </div>
                     <div className="categoryDisplay">
                         {(items.data).map((item, index)=>{
                             return <ItemDisplay item = {item} key={index} />
                         })}
                     </div>
                 </div>}
-                <div className="subtitleAtBottom">
-                    <p className="subtitle fancy"><span>Designed and developed by Dhairya Soni</span></p>
-                </div>
             </div>
         : <LoadingSpinner /> }</>
     );

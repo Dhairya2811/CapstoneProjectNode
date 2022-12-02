@@ -109,7 +109,7 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
             }
         );        
     }else if(name == "Lowtohigh"){
-        setReturn("index", false);
+        setReturn("index", "Price: low to high");
         sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price, rowid DESC`;
         params = [ 0];
         console.log("Not all");
@@ -120,7 +120,7 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
             }
         );
     }else if(name == "Hightolow"){
-        setReturn("index", false);
+        setReturn("index", "Price: high to low");
         sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price DESC`;
         params = [ 0];
         console.log("Not all");
@@ -130,8 +130,19 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
                 response.json(getReturn());
             }
         );
+    }else if(name == "Deals"){
+        setReturn("index", "Deals");
+        sql = `SELECT rowid, * FROM items WHERE quantity > ? AND deal=1 ORDER BY price`;
+        params = [ 0];
+        console.log("Not all");
+        (await db).all(sql, params).then(
+            data=>{
+                setReturn("data", data);
+                response.json(getReturn());
+            }
+        );
     }else{
-        setReturn("index", false);
+        setReturn("index", name);
         sql = `SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC`
         params = [ 0, name];
         console.log("Not all");
@@ -144,8 +155,8 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
     }
 });
 server.get("/index/search/:search_by", async(req, res)=>{
-    setReturn("index", false);
     var name = req.params.search_by;
+    setReturn("index", name);
     var sql = `SELECT rowid, * FROM items WHERE title LIKE ? OR category LIKE ? OR description LIKE ? ORDER BY deal DESC`;
     var params = ['%'+name+'%', '%'+name+'%', '%'+name+'%'];
     (await db).all(sql, params).then(
