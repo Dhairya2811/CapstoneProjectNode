@@ -64,16 +64,18 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
     var name = req.params.name;
     var sql = "";
     var params = [];
+    console.log(name);
     if(name == undefined || name == "All"){    
         // get the last 6 items which are on deal
+        setReturn("index", true);
         var sql_index = `Select rowid,* from items where quantity > ? AND deal=1 ORDER BY rowid DESC LIMIT 0,6`;
         var params_index = [ 0];
         (await db).all(sql_index, params_index).then(
             async data=>{
-                setReturn("deals", data);
+                setReturn("Deals", data);
                 // get the last 6 items which has category Electronic
                 let sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC LIMIT 0,6";
-                let params = [0, 'Electronic'];
+                let params = [0, 'Electronics'];
                 (await db).all(sql, params).then(
                     async data=>{
                         setReturn('Electronic', data)
@@ -95,7 +97,7 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
                                         (await db).all(sql, params).then(
                                             async data=>{
                                                 setReturn('Toys', data);
-                                                response.json(getReturn());
+                                                response.json(getReturn())
                                             }
                                         );
                                     }
@@ -107,40 +109,50 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
             }
         );        
     }else if(name == "Lowtohigh"){
+        setReturn("index", false);
         sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price, rowid DESC`;
         params = [ 0];
         console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
-                response.json(data);
+                setReturn("data", data);
+                response.json(getReturn());        
             }
         );
     }else if(name == "Hightolow"){
+        setReturn("index", false);
         sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price DESC`;
         params = [ 0];
         console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
-                response.json(data);
+                setReturn("data", data);
+                response.json(getReturn());
             }
         );
     }else{
+        setReturn("index", false);
         sql = `SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC`
         params = [ 0, name];
         console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
-                response.json(data);
+                setReturn("data", data);
+                response.json(getReturn());
             }
         );
     }
 });
 server.get("/index/search/:search_by", async(req, res)=>{
+    setReturn("index", false);
     var name = req.params.search_by;
-    var sql = `SELECT rowid, * FROM items WHERE title LIKE ? OR category LIKE ? OR description LIKE ?`;
+    var sql = `SELECT rowid, * FROM items WHERE title LIKE ? OR category LIKE ? OR description LIKE ? ORDER BY deal DESC`;
     var params = ['%'+name+'%', '%'+name+'%', '%'+name+'%'];
     (await db).all(sql, params).then(
-        data=>res.json(data)
+        data=>{
+            setReturn("data", data);
+            res.json(getReturn());
+        }
     )
 })
 
@@ -385,7 +397,7 @@ server.use(express.static('public')); // use this middleware before get method.
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = "UPDATE items SET deal = 1 WHERE title = 'iPhone 14 Pro Max'";
+    // var sql = "UPDATE items SET deal_title='Best deal' WHERE rowid=31";
     // (await db).all(sql).then(
     //     (err, rows)=> console.log("Updated")
     // )

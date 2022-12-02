@@ -56,7 +56,7 @@ $body_back_color: E8F0F4;
     from {
         background-size:0;
         background-color: transparent;
-        color: white;
+        color: #E8F0F4;
     }
     to {
         background-size: 100%;
@@ -93,18 +93,18 @@ $body_back_color: E8F0F4;
     animation-duration: 2s;
 }
 #username_Dropdown{
-    color: white;
+    color: #E8F0F4;
     font-weight: bold;
     font-size: larger;
     a{
-        color: white;
+        color: #E8F0F4;
         font-weight: bold;
         font-size: larger;
     }
 }
 
 .NavbarLink, #offcanvasNavbarDropdown-expand-true{
-    color: white;
+    color: #E8F0F4;
     font-weight: bold;
     font-size: larger;
     
@@ -131,6 +131,7 @@ $body_back_color: E8F0F4;
     font-family: "Nunito"!important;
     background-color: $body_back_color;
     color: #003A56;
+    padding-bottom: 5px;
 // #######################################################
 // ********************* INDEX ***************************
     #index_page{   
@@ -178,6 +179,82 @@ $body_back_color: E8F0F4;
                 }
             }
         }
+        .displayCategoryFilter{
+            .categoryDisplay{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+                .itemDisplayDiv{
+                    width:185px;
+                    border: 1px solid rgb(214, 214, 214);
+                    background-color: rgb(255, 255, 255);
+                    border-radius: 10px;
+                    bottom: 0px;
+                    z-index: 1;
+                    .titlePriceDiv{
+                        width: 100%;
+                        text-align: center;
+                        display: block;
+                        padding-bottom: 10px;
+                        margin-top: -5px;
+                        .itemDealsText{
+                            font-weight: bold;
+                            font-size: 0.9em;
+                            background-color: red;
+                            color: #E8F0F4;
+                            border-radius: 5px;
+                            width: fit-content;
+                            padding: 2px 1em;
+                            text-align: center;
+                            margin: 5px auto;
+                        }
+                        .itemtitleText{
+                            font-size: 17px;
+                            font-weight: bold;
+                        }
+                    }
+                    .displayItemOuter{
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        padding-top: auto;
+                        
+                    }
+                }
+            }
+        }
+        .subtitleAtBottom{
+            margin-top: 5em;
+            .subtitle {
+                margin: 0 0 5px 0;
+            }
+            .fancy {
+                line-height: 0.5;
+                text-align: center;
+            }
+            .fancy span {
+                display: inline-block;
+                position: relative;  
+            }
+            .fancy span:before,
+            .fancy span:after {
+                content: "";
+                position: absolute;
+                height: 5px;
+                border-top: 1px solid #004b70;
+                top: 0;
+                width: 600px;
+            }
+            .fancy span:before {
+                right: 100%;
+                margin-right: 15px;
+            }
+            .fancy span:after {
+                left: 100%;
+                margin-left: 15px;
+            }
+        }
     }
 // #######################################################
     .FormPage{
@@ -187,37 +264,105 @@ $body_back_color: E8F0F4;
             width: 60%;
         }
     }
+    // display items
     .displayItems{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2em;
-        justify-content: center;
-    }
-    .itemDisplayDiv{
-        width:fit-content;
-        border: 1px solid rgb(214, 214, 214);
-        background-color: rgb(240, 239, 239);
-        border-radius: 10px;
-        bottom: 0px;
-        z-index: 1;
-        .titlePriceDiv{
-            height: 20%;
-            padding-top: 1em;
-            position: static;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            margin-bottom: 0px;
+        .showAllDiv{
+            padding: 0 5% 1em ;
+            text-align: end;
+            a{
+                font-weight: bolder;
+                color: #E8F0F4;
+            }
         }
-        .displayItemOuter{
-            height: 80%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding-top: auto;
-            
+        .displayBestDeals{
+            margin: 0 -100px;
+            background-color: #003A56;
+            z-index: -1;
+            background-repeat: no-repeat;
+            background-size: 100% 51%;
+            padding: 2em 100px 4.8em ;
+            .bestDealsTitle{
+                width: 100%;
+                text-align: center;
+                img{
+                    width: 366px;
+                }
+                margin-bottom: 40px;
+            }
+            .bestDealsItems{
+                display: flex;
+                flex-wrap:wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+        }
+        .displayCategory{
+            background-color: #E0EEEC;
+            padding: 10px;
+            margin-top: 2em;
+            .displayByCategory{
+                margin-bottom: 3em;
+            }
+            .categoryTitleDiv{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                h2{
+                    font-weight: bold;
+                    padding-left: 5%;
+                }
+                .showAllDiv{
+                    text-align: end;
+                    a{
+                        color: #003A56;
+                    }
+                }
+            }
+            .categoryDisplay{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+        }
+        .itemDisplayDiv{
+            width:185px;
+            border: 1px solid rgb(214, 214, 214);
+            background-color: rgb(255, 255, 255);
+            border-radius: 10px;
+            bottom: 0px;
+            z-index: 1;
+            .titlePriceDiv{
+                width: 100%;
+                text-align: center;
+                display: block;
+                padding-bottom: 10px;
+                margin-top: -5px;
+                .itemDealsText{
+                    font-weight: bold;
+                    font-size: 0.9em;
+                    background-color: red;
+                    color: #E8F0F4;
+                    border-radius: 5px;
+                    width: fit-content;
+                    padding: 2px 1em;
+                    text-align: center;
+                    margin: 5px auto;
+                }
+                .itemtitleText{
+                    font-size: 17px;
+                    font-weight: bold;
+                }
+            }
+            .displayItemOuter{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                padding-top: auto;
+                
+            }
         }
     }
+    // *********************************
     .commentsDiv{
         margin: 2em 3em 0em 3em;
         .commentHeading{
