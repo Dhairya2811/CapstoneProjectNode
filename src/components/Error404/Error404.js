@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import image404 from "../../Images/cart404.png"
+import {image404} from "./images.json";
 
 class Error404 extends Component{
     linkDiv(){

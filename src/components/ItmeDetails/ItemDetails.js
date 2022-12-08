@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Error404 from "../Error404/Error404";
 
 var ItemDetails = () => {
     var [item, setItem] = useState();
@@ -14,7 +15,8 @@ var ItemDetails = () => {
             setItemLoaded(true);
             fetch(`/getItem/${id}`)
             .then(res => res.json())
-            .then(res=>{setItem(res)});
+            .then(res=>{
+                setItem(res)});
         }
         if(commentLoading == true){
             getCommentData();
@@ -155,8 +157,15 @@ var ItemDetails = () => {
         }
     }
     var returnFun = ()=>{
-        if(item == undefined){
-            <div style={{height: window.innerHeight, width: window.innerWidth, zIndex: 1, backgroundColor: "gray"}}></div>
+        if(item == undefined ){
+            return <div style={{height: window.innerHeight, width: window.innerWidth, zIndex: 1, padding: "1em"}}>
+                <Error404 errorMessage="There is no item on this URL" linkAvailable = "true"/>
+            </div>
+        }
+        else if (item.item== "undefined"){
+            return <div style={{height: window.innerHeight, width: window.innerWidth, zIndex: 1, padding: "1em"}}>
+                <Error404 errorMessage="There is no item on this URL" linkAvailable = "true"/>
+            </div>
         }else{
             var getComment = getComments();
             return <>
@@ -187,7 +196,7 @@ var ItemDetails = () => {
     }
 
     return(
-        <div>
+        <div className="itemDetailsPage">
             {returnFun()}
         </div>
     );

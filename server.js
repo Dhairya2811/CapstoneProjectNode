@@ -48,40 +48,124 @@ var pathArray = [
     "/payment", 
     "/category/:name",
     "/myCart/category/:name",
-    "/myItems/category/:name"
+    "/myItems/category/:name",
+    "/search/:search_by"
 ];
 server.get(pathArray, (req, response)=>{
         response.render('index');    
 });
 
-var sqlQuery = (table, name)=>{
-    var sql = "";
-    var params = [];
-    if(name == undefined || name == "All"){
-        sql = `Select rowid,* from ${table} where quantity > ?`;
-        params = [ 0];
-    }else if(name == "Lowtohigh"){
-        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price`;
-        params = [ 0]
-    }else if(name == "Hightolow"){
-        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? ORDER BY price DESC`;
-        params = [ 0]
-    }else{
-        sql = `SELECT rowid, * FROM ${table} WHERE quantity > ? AND category = ?`
-        params = [ 0, name]
-    }
-    return [sql, params];
+const returnData = {};
+const setReturn = (key, data)=>{
+    returnData[key] = data;
 };
-
+const getReturn = ()=> {return returnData}
 server.get(["/index", "/index/category/:name"], async (req, response)=>{
     var name = req.params.name;
-    var [sql, params] = sqlQuery("items", name);
+    var sql = "";
+    var params = [];
+    console.log(name);
+    if(name == undefined || name == "All"){    
+        // get the last 6 items which are on deal
+        setReturn("index", true);
+        var sql_index = `Select rowid,* from items where quantity > ? AND deal=1 ORDER BY rowid DESC LIMIT 0,6`;
+        var params_index = [ 0];
+        (await db).all(sql_index, params_index).then(
+            async data=>{
+                setReturn("Deals", data);
+                // get the last 6 items which has category Electronic
+                let sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC LIMIT 0,6";
+                let params = [0, 'Electronics'];
+                (await db).all(sql, params).then(
+                    async data=>{
+                        setReturn('Electronic', data)
+                        // get the last 6 items which has category Fashion
+                        let sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC LIMIT 0,6";
+                        let params = [0, 'Fashion'];
+                        (await db).all(sql, params).then(
+                            async data=>{
+                                setReturn('Fashion', data);
+                                // get the last 6 items which has category Home
+                                let sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC LIMIT 0,6";
+                                let params = [0, 'Home'];
+                                (await db).all(sql, params).then(
+                                    async data=>{
+                                        setReturn('Home', data);
+                                        // get the last 6 items which has category Toys
+                                        let sql = "SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC LIMIT 0,6";
+                                        let params = [0, 'Toys'];
+                                        (await db).all(sql, params).then(
+                                            async data=>{
+                                                setReturn('Toys', data);
+                                                response.json(getReturn())
+                                            }
+                                        );
+                                    }
+                                );
+                            }
+                        );   
+                    }
+                );
+            }
+        );        
+    }else if(name == "Lowtohigh"){
+        setReturn("index", "Price: low to high");
+        sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price, rowid DESC`;
+        params = [ 0];
+        console.log("Not all");
+        (await db).all(sql, params).then(
+            data=>{
+                setReturn("data", data);
+                response.json(getReturn());        
+            }
+        );
+    }else if(name == "Hightolow"){
+        setReturn("index", "Price: high to low");
+        sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price DESC`;
+        params = [ 0];
+        console.log("Not all");
+        (await db).all(sql, params).then(
+            data=>{
+                setReturn("data", data);
+                response.json(getReturn());
+            }
+        );
+    }else if(name == "Deals"){
+        setReturn("index", "Deals");
+        sql = `SELECT rowid, * FROM items WHERE quantity > ? AND deal=1 ORDER BY price`;
+        params = [ 0];
+        console.log("Not all");
+        (await db).all(sql, params).then(
+            data=>{
+                setReturn("data", data);
+                response.json(getReturn());
+            }
+        );
+    }else{
+        setReturn("index", name);
+        sql = `SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC`
+        params = [ 0, name];
+        console.log("Not all");
+        (await db).all(sql, params).then(
+            data=>{
+                setReturn("data", data);
+                response.json(getReturn());
+            }
+        );
+    }
+});
+server.get("/index/search/:search_by", async(req, res)=>{
+    var name = req.params.search_by;
+    setReturn("index", name);
+    var sql = `SELECT rowid, * FROM items WHERE title LIKE ? OR category LIKE ? OR description LIKE ? ORDER BY deal DESC`;
+    var params = ['%'+name+'%', '%'+name+'%', '%'+name+'%'];
     (await db).all(sql, params).then(
         data=>{
-            response.json(data);
+            setReturn("data", data);
+            res.json(getReturn());
         }
-    );
-});
+    )
+})
 
 server.get("/getComments/:itemid", async(req, res)=>{
     var itemid = req.params.itemid;
@@ -139,15 +223,21 @@ server.get("/getItem/:id", async (req, res)=>{
     .then(
         async (rows)=>{
             // rows["incart"] = true;
-            (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
-            .then(internalrows =>{
-                var inCart = false;
-                if ((internalrows).length !== 0){
-                    inCart = true;
-                }
-                rows["inCart"] = inCart;
-                res.send(rows);
-            });
+            if(rows !== undefined){
+                (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
+                .then(internalrows =>{
+                    var inCart = false;
+                    if ((internalrows).length !== 0){
+                        inCart = true;
+                    }
+                    rows["inCart"] = inCart;
+                    console.log(rows);
+                    res.send(rows);
+                });
+            }else{
+                let row = {"item": "undefined"}
+                res.send(row);
+            }
         }
     );
 });
@@ -324,5 +414,9 @@ server.use(express.static('public')); // use this middleware before get method.
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
+    // var sql = "UPDATE items SET deal_title='Best deal' WHERE rowid=31";
+    // (await db).all(sql).then(
+    //     (err, rows)=> console.log("Updated")
+    // )
     console.log("Server is listening on port 3000");
 });

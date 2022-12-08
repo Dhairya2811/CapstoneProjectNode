@@ -73,7 +73,6 @@ var AddItem = ({role})=>{
                             body: JSON.stringify({title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
                         }).then(res => res.text())
                         .then(res => {
-                            // console.log(res);
                             if(res == "inserted"){
                                 navigate("/");
                                 setInserted(true)
