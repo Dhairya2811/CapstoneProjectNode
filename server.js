@@ -64,7 +64,6 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
     var name = req.params.name;
     var sql = "";
     var params = [];
-    console.log(name);
     if(name == undefined || name == "All"){    
         // get the last 6 items which are on deal
         setReturn("index", true);
@@ -112,7 +111,6 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
         setReturn("index", "Price: low to high");
         sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price, rowid DESC`;
         params = [ 0];
-        console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
                 setReturn("data", data);
@@ -123,7 +121,6 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
         setReturn("index", "Price: high to low");
         sql = `SELECT rowid, * FROM items WHERE quantity > ? ORDER BY price DESC`;
         params = [ 0];
-        console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
                 setReturn("data", data);
@@ -134,7 +131,6 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
         setReturn("index", "Deals");
         sql = `SELECT rowid, * FROM items WHERE quantity > ? AND deal=1 ORDER BY price`;
         params = [ 0];
-        console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
                 setReturn("data", data);
@@ -145,7 +141,6 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
         setReturn("index", name);
         sql = `SELECT rowid, * FROM items WHERE quantity > ? AND category = ? ORDER BY rowid DESC`
         params = [ 0, name];
-        console.log("Not all");
         (await db).all(sql, params).then(
             data=>{
                 setReturn("data", data);
@@ -231,7 +226,6 @@ server.get("/getItem/:id", async (req, res)=>{
                         inCart = true;
                     }
                     rows["inCart"] = inCart;
-                    console.log(rows);
                     res.send(rows);
                 });
             }else{
@@ -360,6 +354,9 @@ server.post("/addToCart", async (req, res)=>{
     var sql = "INSERT INTO cart (name, itemID) VALUES (?, ?)";
     var sql2 = "DELETE FROM cart WHERE name=? AND itemID=?"
     var params = [username, itemid];
+    console.log(data.cartAction);
+    console.log("id: "+ itemid);
+    console.log("username: "+ username);
     if(data.cartAction){
         (await db).all(sql, params).then(
             (err, rows)=>{

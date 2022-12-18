@@ -1,27 +1,34 @@
 import React, {Component} from "react";
-import {image404} from "./images.json";
+import {glasses2Image, bagImage, watchImg} from "./images.json";
 
-class Error404 extends Component{
-    linkDiv(){
-        if(this.props.linkAvailable == "true"){
+var Error404 = ({ linkAvailable, errorMessage }) => {
+    var linkDiv = ()=>{
+        if(linkAvailable == "true"){
             return(<>
-                <div>{this.props.errorMessage}</div>
+                <div>{errorMessage}</div>
             </>)
         }
     }
-    render(){
-        return(
-            <>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr" }}>
-                    <img src={image404} />
-                    <div style={{float: "left", marginLeft: "6em", marginTop: "3em"}}>
-                        <h1>Page not found!</h1>
-                        <div>{this.linkDiv()}</div>
+    return(
+        <>
+            <div className="page404">
+                <div className="div404">
+                    <div className="forAnimation">
+                        <h1 className="h1404">404</h1>
+                        <p className="messageP">{linkDiv()}</p>
+                        <h5>Page not found!!!</h5>
+                        <a>Click here to go home</a>
                     </div>
                 </div>
-            </>
-        );
-    }
+                
+                <div className="images">
+                    <img src={glasses2Image} className="glassImage" />
+                    <img src={watchImg} className="watchImg"/>
+                    <img src={bagImage} className="bagImage"/>
+                </div>
+            </div>
+        </>
+    );
 }
 
 export default Error404;
