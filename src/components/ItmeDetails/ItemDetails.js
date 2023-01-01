@@ -1,12 +1,14 @@
 import {useEffect, useState} from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Error404 from "../Error404/Error404";
+import LoadingSpinner from "../LoadingComponent/Loading";
 
 var ItemDetails = () => {
     var [item, setItem] = useState();
     var [itemLoaded, setItemLoaded] = useState(false);
     var {id} = useParams();
     var navigate = useNavigate();
+    var location = useLocation();
     var [commentLoading, setCommentLoading] = useState(true);
     var [comments, setComments] = useState([]);
 
@@ -16,12 +18,14 @@ var ItemDetails = () => {
             fetch(`/getItem/${id}`)
             .then(res => res.json())
             .then(res=>{
-                setItem(res)});
+                setItem(res)
+                setItemLoaded(false);
+            });
         }
         if(commentLoading == true){
             getCommentData();
         }
-    });
+    }, [location]);
     var getCommentData = ()=>{
         fetch("/getComments/"+id)
         .then(res=>res.json())
@@ -96,7 +100,7 @@ var ItemDetails = () => {
                 <textarea className="form-control" id="commentText" style={{borderRadius: "10px 0px 0px 10px"}} rows="4" placeholder="Add comment for this item..."></textarea>
             </div>
             <div className="submitButton">
-                <button className="submitCommentBtn" onClick={submitComment.bind(this)}><i className='material-icons' style={{color: "white"}}>send</i></button>
+                <button className="submitCommentBtn" style={{backgroundColor: "#003A56"}} onClick={submitComment.bind(this)}><i className='material-icons' style={{color: "white"}}>send</i></button>
             </div>
         </div>
     }
@@ -108,14 +112,14 @@ var ItemDetails = () => {
         if(username !== null){
             if(item.name == username){
                 return <div style={{width: "100%"}}>
-                    <input style={{marginTop: "1em", marginLeft: "3em"}} className="btn btn-primary" type="button" value="Edit" onClick={editItem} />
-                    <input style={{marginTop: "1em", marginRight: "3em", float: "right"}} className="btn btn-danger" type="button" value="Delete" onClick={delItem} />
+                    <input className="btn btn-primary cartBtn" style={{backgroundColor: "#003A56", borderColor: "#003A56"}} type="button" value="Edit" onClick={editItem} />
+                    <input className="btn btn-danger cartBtn" type="button" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} value="Delete" onClick={delItem} />
                 </div>
             }
             else if(item.inCart !== true){
-                return <input style={{marginTop: "1em", marginLeft: "3em"}} className="btn btn-primary" type="button" value="Add to cart" onClick={addToCart} />;
+                return <input className="btn btn-primary cartBtn" style={{backgroundColor: "#003A56"}} type="button" value="Add to cart" onClick={addToCart} />;
             }else{
-                return <input style={{marginTop: "1em", marginLeft: "3em"}} className="btn btn-danger" type="button" value="Remove from cart" onClick={addToCart} />;
+                return <input className="btn btn-danger cartBtn" type="button" value="Remove from cart" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} onClick={addToCart} />;
             }
         }
     }
@@ -157,47 +161,51 @@ var ItemDetails = () => {
         }
     }
     var returnFun = ()=>{
-        if(item == undefined ){
-            return <div style={{height: window.innerHeight, width: window.innerWidth, zIndex: 1, padding: "1em"}}>
+        if(item == undefined && !itemLoaded){
+            return <div style={{ zIndex: 1}}>
                 <Error404 errorMessage="There is no item on this URL" linkAvailable = "true"/>
             </div>
         }
-        else if (item.item== "undefined"){
-            return <div style={{height: window.innerHeight, width: window.innerWidth, zIndex: 1, padding: "1em"}}>
+        else if (item.item== "undefined" && !itemLoaded){
+            return <div style={{ zIndex: 1}}>
                 <Error404 errorMessage="There is no item on this URL" linkAvailable = "true"/>
             </div>
         }else{
             var getComment = getComments();
-            return <>
-                <div style={{ width:"100%", display: "grid", gridTemplateColumns: "30% auto", marginTop: "1em"}}>
-                    <div style={{height: "100%", width: "100%"}}>
-                        <img src={item.image} style={{marginTop: "1em", marginLeft:"5%", width: "90%"}}/>
-                        <h2 style={{width:"100%", marginLeft: "1.5em"}}>${item.price}</h2>
+            return <div className="displayItemInfo">
+                <div className="displayInfodiv">
+                    <div className="itemImageDisplay">
+                        <img className="itemImage" src={item.image} />
                     </div>
-                    <div style={{height: "100%", width: "100%",marginLeft:"2em" , marginTop: "1em"}}>
-                        <h1 style={{marginBottom: "0px"}}>{item.title}</h1>
-                        <small style={{marginTop: "0px"}}>{item.category}</small>
-                        <pre style={{fontSize: "15px", marginTop: "2em"}}>{item.description}</pre>
+                    <div className="itemInfoDisplay" >
+                        <h1 className="title">{item.title}</h1>
+                        <small>{item.category}</small>
+                        <div className="reviewDiv">
+                            <a href="#commentsDiv"> {comments.length} 
+                            {comments.length == 1 || comments.length == 0 ? <span> review</span> : <span> reviews</span>}</a>
+                        </div>
+                        <h4 className="itemPrice">${item.price}</h4>
+                        <pre className="itemDescription">{item.description}</pre>
+                        
+                        {addToCartBtnDisplay()} 
                     </div>
-                </div>
-                {/* {console.log(item)} */}
-                {addToCartBtnDisplay()}  
+                </div> 
                 <br/>
-                <div className="commentsDiv">
+                {sessionStorage.getItem("username") != null || comments.length != 0 ? <div className="commentsDiv" id="commentsDiv">
                     <span className="commentHeading">
                         <h3>Comment</h3>
                     </span>
                     {sessionStorage.getItem("username") != null ? addComment() :
                     <></>}
                     {getComment}
-                </div>
-            </>
+                </div> : <></>}
+            </div>
         }
     }
 
     return(
         <div className="itemDetailsPage">
-            {returnFun()}
+            {itemLoaded ? <LoadingSpinner /> : returnFun()}
         </div>
     );
 }
