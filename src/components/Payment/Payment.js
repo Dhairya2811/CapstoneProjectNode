@@ -92,7 +92,6 @@ var Payment = ()=>{
                         </div>
                     <div className="paymentPage">
                         <div className="displayPaymentItems">
-                            {console.log(items)}
                             {items.map(item=>{
                                 return <DisplayPaymentItems item={item} />
                             })}

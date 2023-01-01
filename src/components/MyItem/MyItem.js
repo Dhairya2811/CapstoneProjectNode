@@ -30,8 +30,8 @@ var  MyItem = ({count})=> {
         }
     });
     return(
-        <div>
-            <div className="displayitems">
+        <div className="displayMyItemsPage">
+            <div className="displayItems">
                 {loading == false ? (items).map((item, index)=>{
                     return <ItemDisplay item = {item} key={index} />
                 }) : <LoadingSpinner /> }
