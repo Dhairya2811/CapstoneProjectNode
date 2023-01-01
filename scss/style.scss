@@ -640,6 +640,7 @@ $body_back_color: #E8F0F4;
 .page404{
     background-color: $body_back_color;
     text-align: center;
+    height: 89.5vh;
     .div404{
         padding-top: 20vh;
         .forAnimation{
@@ -647,6 +648,9 @@ $body_back_color: #E8F0F4;
             .h1404{
                 font-size: 7em;
                 font-weight: bolder;
+            }
+            .link_to_go_home{
+                z-index: 5;
             }
         }
         .h1404{

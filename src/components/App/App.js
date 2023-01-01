@@ -10,6 +10,7 @@ import ItemDetails from "../ItmeDetails/ItemDetails";
 import MyCart from "../MyCart/MyCart";
 import MyItem from "../MyItem/MyItem";
 import Payment from "../Payment/Payment";
+import Error404 from "../Error404/Error404";
 
 class App extends React.Component{
     render(){
@@ -31,6 +32,7 @@ class App extends React.Component{
                             <Route path="/myItems/category/:name" element={<MyItem />} />
                             <Route path="/editItem/:id" element={<AddItem role="edit"/>} />
                             <Route path="/payment" element={<Payment />}/>
+                            <Route path="*" element={<Error404 />}/>
                     </Routes>
                 </div>
             </div>

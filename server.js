@@ -50,7 +50,7 @@ var pathArray = [
     "/myCart/category/:name",
     "/myItems/category/:name",
     "/search/:search_by"
-];
+ ];
 server.get(pathArray, (req, response)=>{
         response.render('index');    
 });
@@ -408,6 +408,12 @@ server.post("/successfulPurchase", async (req, res)=>{
 });
 
 server.use(express.static('public')); // use this middleware before get method.
+
+server.get("/:path", (req, res)=>{
+    // res.redirect("/");
+    res.render('index');    
+
+});
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{

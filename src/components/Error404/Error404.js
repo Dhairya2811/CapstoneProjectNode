@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import { Link } from "react-router-dom";
 import {glasses2Image, bagImage, watchImg} from "./images.json";
 
 var Error404 = ({ linkAvailable, errorMessage }) => {
@@ -17,7 +18,7 @@ var Error404 = ({ linkAvailable, errorMessage }) => {
                         <h1 className="h1404">404</h1>
                         <p className="messageP">{linkDiv()}</p>
                         <h5>Page not found!!!</h5>
-                        <a>Click here to go home</a>
+                        <Link to={"/"} style={{zIndex: "5", color:"#003A56"}} className="link_to_go_home">Click here to go home</Link>
                     </div>
                 </div>
                 
