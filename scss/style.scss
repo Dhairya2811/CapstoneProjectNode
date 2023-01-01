@@ -433,7 +433,8 @@ $body_back_color: #E8F0F4;
     }
     // *********************************
     .itemDetailsPage{
-        height: 90vh;
+        min-height: 100vh;
+        height: auto;
         background-color: $body_back_color;
         padding: $padding_r_l_desktop;
         .displayItemInfo{
