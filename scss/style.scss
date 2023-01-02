@@ -280,8 +280,7 @@ $body_back_color: #E8F0F4;
     // display items
     .displayMyItemsPage, .displayMyCartItemsPage{
         padding: $padding_r_l_desktop;
-        min-height: 90vh;
-        padding-top: 2em;
+        margin-bottom: -5px;
     }
     .displayMyItemsPage{
         .displayItems{
@@ -296,41 +295,51 @@ $body_back_color: #E8F0F4;
             display: grid;
             grid-template-columns: 3fr 1fr;
             gap: 5em;
-            .cartItem{
-                border-radius: 10px;
-                display: grid;
-                grid-template-columns: 1fr 4fr;
-                background-color: white;
-                gap: 2em;
-                padding: 1em 2em;
-                .cartItemImage{
-                    width: 100%;
-                    .displayImage{
-                        width: 184px;
-                        height: 100%;
-                        border-radius: 10px;
-                    }
-                }
-                .cartItemDetails{
-                    .itemTitle{
-                        font-weight: bolder;
-                        margin-bottom: -0.3em;
-                    }
-                    .priceNdBtn{
-                        display: flex;
-                        .itemPrice{ 
-                            font-weight: bolder;
-                            margin-top: 1em;
-                            margin-right: 0.5em;
+            padding-top: 2em;
+            min-height: 90vh;
+            height: fit-content;
+            .displayCartItems{
+                height: fit-content;
+                .cartItem{
+                    border-radius: 10px;
+                    display: grid;
+                    grid-template-columns: 1fr 4fr;
+                    background-color: white;
+                    gap: 2em;
+                    padding: 1em 2em;
+                    margin-bottom: 1em;
+                    .cartItemImage{
+                        width: 100%;
+                        .displayImage{
+                            width: 184px;
+                            height: 100%;
+                            border-radius: 10px;
                         }
-                        .btnDiv{
-                            button{
+                    }
+                    .cartItemDetails{
+                        .itemTitle{
+                            font-weight: bolder;
+                            margin-bottom: -0.3em;
+                        }
+                        .priceNdBtn{
+                            display: flex;
+                            .itemPrice{ 
+                                font-weight: bolder;
                                 margin-top: 1em;
-                                z-index: 2;
+                                margin-right: 0.5em;
+                            }
+                            .btnDiv{
+                                button{
+                                    margin-top: 1em;
+                                    z-index: 2;
+                                }
                             }
                         }
                     }
                 }
+            }
+            .displayPrice{
+                height: fit-content;
             }
         }
     }
