@@ -340,6 +340,21 @@ $body_back_color: #E8F0F4;
             }
             .displayPrice{
                 height: fit-content;
+                .priceText{
+                    background-color: white;
+                    padding: 1em 10px ;
+                    border-radius: 10px;
+                }
+                .cartPaymentButtonDiv{
+                    margin-top: 2em;
+                    .cartPaymentButton{
+                        background-color: #003A56;
+                        border-color: #003A56;
+                        width: 100%;
+                        border-radius: 2em;
+                        font-weight: bold;
+                    }
+                }
             }
         }
     }
