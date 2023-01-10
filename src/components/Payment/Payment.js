@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 var DisplayPaymentItems = ({item})=>{
     return <div className="paymentListItem">
         <div className="paymentListImage">
-            <img src={item.image}/>
+            <div className="displayImage" style={{background: `transparent url(${item.image}) no-repeat center`, height: "100%", width: "184px", backgroundSize: "contain"}}>
+            </div>
         </div>
         <div className="paymentListDetails">
             <div>
@@ -96,7 +97,7 @@ var Payment = ()=>{
                                 return <DisplayPaymentItems item={item} />
                             })}
                         </div>
-                        <div className="checkoutPrice" style={{height: `${window.innerHeight * 0.9}px`}}>
+                        <div className="checkoutPrice">
                             <h2>Payment</h2>
                             <hr />
                             <div className="itemList">

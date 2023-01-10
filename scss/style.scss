@@ -283,6 +283,8 @@ $body_back_color: #E8F0F4;
         margin-bottom: -5px;
     }
     .displayMyItemsPage{
+        min-height: 90vh;
+        padding-top: 2em;
         .displayItems{
             display: flex;
             flex-wrap:wrap;
@@ -570,8 +572,10 @@ $body_back_color: #E8F0F4;
     .paymentPage{
         display: grid;
         grid-template-columns: 2fr 1fr;
-        height: 90%;
-        $payment-background-color: rgb(242, 242, 242);
+        min-height: 90%;
+        padding: 2em 100px 0;
+        $payment-background-color: white;
+
         .displayPaymentItems{
             .paymentListItem{
                 display: grid;
@@ -597,6 +601,7 @@ $body_back_color: #E8F0F4;
             border-radius: 10px;
             padding: 2em 10%;
             background-color: $payment-background-color;
+            height: fit-content;
             h2{
                 width: 100%;
                 text-align: center;
