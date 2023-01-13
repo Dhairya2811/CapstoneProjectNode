@@ -656,6 +656,9 @@ $body_back_color: #E8F0F4;
         border-radius: 50%;
         animation: spinner 1.5s linear infinite;
     }
+    .AddItem_container{
+        padding: 0 150px;
+    }
 }
 @keyframes fadeUp {
     from{
@@ -731,5 +734,4 @@ $body_back_color: #E8F0F4;
             animation-fill-mode: forwards;
         }
     }
-    
 }

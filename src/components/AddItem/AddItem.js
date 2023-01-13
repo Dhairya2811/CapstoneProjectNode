@@ -181,9 +181,9 @@ var AddItem = ({role})=>{
         }
     }
     return(
-        <Container>
+        <div className="AddItem_container">
             {returnDiv()}
-        </Container>
+        </div>
     );
 }
 
