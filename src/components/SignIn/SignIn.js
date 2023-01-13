@@ -58,7 +58,7 @@ class SignIn extends Component{
     }
     returnFunction(){
         if(sessionStorage.getItem("username") == null){
-            return <div className="FormPage d-flex justify-content-center align-items-center">
+            return <div className="FormPage d-flex justify-content-center" id="login_page">
                 <form onSubmit={this.submitBtnClick}>
                     <div className="alert alert-danger" id="err" style={{display: "none"}}></div>
                     <div className="signin-username">
@@ -69,7 +69,7 @@ class SignIn extends Component{
                         <label> Password </label>
                         <input type="password" placeholder="password" className="form-control" />
                     </div><br />
-                    <input type="submit" className="btn btn-primary" value="Submit" />
+                    <input type="submit" className="btn btn-primary login_submit_btn" value="Submit" />
                 </form>
             </div>
         }else{
@@ -80,9 +80,9 @@ class SignIn extends Component{
     render(){
         const returnfunction = this.returnFunction();
         return(
-            <>
+            <div className="d-flex justify-content-center">
                 {this.returnFunction()}
-            </>
+            </div>
         );
     }
 }
