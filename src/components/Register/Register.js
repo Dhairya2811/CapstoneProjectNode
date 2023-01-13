@@ -66,7 +66,7 @@ class Register extends Component{
     }
     returnFunction(){
         if(sessionStorage.getItem("username") == null){
-            return <div className="FormPage d-flex justify-content-center align-items-center">
+            return <div className="FormPage d-flex justify-content-center" id="register_page" style={{paddingTop: "6%"}}>
                 <form onSubmit={this.submitBtnClick}>
                     <div className="alert alert-danger" id="err" style={{display: "none"}}></div>
                     <div className="register-username">
@@ -85,7 +85,7 @@ class Register extends Component{
                         <label> Conform Password </label>
                         <input type="password" placeholder="Conform Password" className="form-control" />
                     </div><br />
-                    <input type="submit" value="Submit" className="btn btn-primary" />
+                    <input type="submit" value="Submit" className="btn btn-primary login_submit_btn" />
                 </form>
             </div>
         }else{
@@ -94,9 +94,9 @@ class Register extends Component{
     }
     render(){
         return(
-            <>
+            <div className="d-flex justify-content-center">
                 {this.returnFunction()}
-            </>
+            </div>
         );
     }
 }
