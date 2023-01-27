@@ -190,7 +190,7 @@ var  Index = ()=> {
                     </div>
                 </div>}
             </div>
-        : <LoadingSpinner /> }</>
+        : <><LoadingSpinner /></> }</>
     );
 }
 

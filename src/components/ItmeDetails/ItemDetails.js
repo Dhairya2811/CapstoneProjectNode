@@ -80,6 +80,7 @@ var ItemDetails = () => {
             .then(res => {
                 if(res == "Inserted"){
                     setCommentLoading(true);
+                    navigate("/details/"+id);
                 }
             });
             document.getElementById("commentText").value = "";
