@@ -338,6 +338,9 @@ server.post("/addItem", async (req, res)=>{
     var image = data.image;
     var imageName = data.imageName;
     var name = data.username;
+    var dealText = data.dealText;
+    var dealPrice = data.dealPrice;
+    console.log(`deal text: ${dealText}\ndeal price: ${dealPrice}`);
     var sql = "INSERT INTO items(title, description, price, image, imageName, quantity, category, name) Values (?, ?, ?, ?, ?, ?, ?, ?)";
     var params = [title, description, price,image, imageName, quantity, category, name];
     (await db).all(sql, params).then(
@@ -383,6 +386,13 @@ server.post("/updateItem", async (req, res)=>{
     var image = data.image;
     var imageName = data.imageName;
     var name = data.username;
+    var deal = false;
+    var dealText = data.dealText;
+    var dealPrice = data.dealPrice;
+    if(dealText != ""  || dealText != undefined){
+        deal = true;
+    }
+    console.log(`deal text: ${dealText}\ndeal price: ${dealPrice} \nDeal: ${deal}`);
     var sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? , category = ?, name = ? WHERE rowid = ?";
     var params = [title, description, price,image, imageName, quantity, category, name, id];
     (await db).all(sql, params).then(

@@ -1,107 +1,146 @@
 import React, {useEffect, useState} from "react";
-import { Container } from "react-bootstrap";
 import Error404 from "../Error404/Error404";
-import {
-    useNavigate
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../LoadingComponent/Loading";
+import { noImage } from "./image.json";
 
 var AddItem = ({role})=>{ 
     var [inserted, setInserted] = useState(false);
     var [data, setData] = useState();
     var [count, setCount] = useState(0);
     var [loading, setLoading] = useState(true);
+    var [uploadImageVal, setUploadImageVal] = useState();
+    var [dealValIn, setDealValIn] = useState();
+    var [addDeal, setAddDeal] = useState(false);
 
     var navigate = useNavigate();
+
+    var submitData = (jsonObj)=>{
+        document.getElementById("err").style.display = "none";
+        fetch("/addItem", {
+            method:"post",
+            headers:{
+                "Content-Type":"application/json",
+            },
+            credentials: "include",
+            body: jsonObj
+        }).then(res => res.text())
+        .then(res => {
+            if(res == "inserted"){
+                setInserted(true)
+            }else{setInserted(false)}
+        });
+    };  
+
     var submitForm = (event) => {
         event.preventDefault();
-        var title = event.target[0].value;
-        var description = event.target[1].value;
-        var price = event.target[2].value;
-        var image = event.target[3];
-        var quantity = event.target[4].value;
-        var category = event.target[5].value;
-        if(role == "new"){
-            if(isNaN(price)){
-                let errdiv = document.getElementById("err");
-                errdiv.style.display = "block";
-                errdiv.innerHTML = "Please enter correct number as a price.";
-            }else{
-                document.getElementById("err").style.display = "none";
-                var reader = new FileReader();
-                reader.readAsDataURL(image.files[0])
-                let filepathtemp = image.value;
-                let filepathtemparr = String(filepathtemp).split("\\");
-                var imageName = (filepathtemparr[filepathtemparr.length-1])
-                reader.onload= ()=>{
-                    fetch("/addItem", {
-                        method:"post",
-                        headers:{
-                            "Content-Type":"application/json",
-                        },
-                        credentials: "include",
-                        body: JSON.stringify({title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
-                    }).then(res => res.text())
-                    .then(res => {
-                        if(res == "inserted"){
-                            setInserted(true)
-                        }else{
-                        }
-                    });
-                }
-            }    
-        }else if(role == "edit"){
-            if(isNaN(price)){
-                let errdiv = document.getElementById("err");
-                errdiv.style.display = "block";
-                errdiv.innerHTML = "Please enter correct number as a price.";
-            }else{
-                document.getElementById("err").style.display = "none";
-                var reader = new FileReader();
-                if(image.files[0] != null){
+        var image = event.target[0];
+        var title = event.target[1].value;
+        var description = event.target[2].value;
+        var price = event.target[3].value;
+        var category = event.target[4].value;
+        var quantity = event.target[5].value;
+        var dealText;
+        var dealPrice;
+        var passDeals = false;
+        console.log(event);
+        if(dealValIn == "price"){
+            var offPrice = event.target[10].value;
+            if(offPrice<price){
+                passDeals = true;
+                dealText = `$${offPrice} off`;
+                dealPrice = price-offPrice;
+            }else{passDeals = false;}
+        }else if(dealValIn == "percent"){
+            var offPrice = event.target[8].value;
+            if(offPrice<100){
+                passDeals = true;
+                dealText = `${offPrice}% off`;
+                dealPrice = price-(price*offPrice/100);
+            }
+            else{passDeals = false;}
+        }
+        if(passDeals){
+            if(role == "new"){
+                if(isNaN(price)){
+                    let errdiv = document.getElementById("err");
+                    errdiv.style.display = "block";
+                    errdiv.innerHTML = "Please enter correct number as a price.";
+                }else{
+                    var reader = new FileReader();
                     reader.readAsDataURL(image.files[0])
                     let filepathtemp = image.value;
                     let filepathtemparr = String(filepathtemp).split("\\");
                     var imageName = (filepathtemparr[filepathtemparr.length-1])
-                    reader.onload= ()=>{
+                    // JSON.stringify({title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
+                    if(addDeal){
+                        // send dealText and dealPrice with other data too.
+                        reader.onload= ()=>{
+                            console.log(`dealText: ${dealText}, dealPrice: ${dealPrice}`); 
+                        }
+                    }else{
+                        // send the normal data
+                        reader.onload= ()=>{
+                            console.log("No deal");
+                        }
+                    }
+                }    
+            }else if(role == "edit"){
+                if(isNaN(price)){
+                    let errdiv = document.getElementById("err");
+                    errdiv.style.display = "block";
+                    errdiv.innerHTML = "Please enter correct number as a price.";
+                    document.querySelector(".AddItem_container").style.marginBottom = "3em";
+                }else{
+                    var reader = new FileReader();
+                    var imageName = "";
+                    
+                    if(image.files[0] != null){
+                        reader.readAsDataURL(image.files[0])
+                        let filepathtemp = image.value;
+                        let filepathtemparr = String(filepathtemp).split("\\");
+                        var imageName = (filepathtemparr[filepathtemparr.length-1]);
+                        reader.onload= ()=>{
+                            // JSON.stringify({id: data.rowid, title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username"), dealPrice: dealPrice, dealText: dealText})
+                            
+                        }
+                    }else{
+                        var imageData = data.image;
+                        var imageName = data.imageName;
                         fetch("/updateItem", {
                             method:"post",
                             headers:{
                                 "Content-Type":"application/json",
                             },
                             credentials: "include",
-                            body: JSON.stringify({title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
+                            body: JSON.stringify({id: data.rowid,title: title, description: description, price:price, image:imageData, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username"), dealPrice: dealPrice, dealText: dealText})
                         }).then(res => res.text())
                         .then(res => {
-                            if(res == "inserted"){
+                            if(res == "updated"){
                                 navigate("/");
-                                setInserted(true)
+                                setInserted(true);
                             }else{setInserted(false)}
                         });
                     }
-                }else{
-                    var imageData = data.image;
-                    var imageName = data.imageName;
-                    fetch("/updateItem", {
-                        method:"post",
-                        headers:{
-                            "Content-Type":"application/json",
-                        },
-                        credentials: "include",
-                        body: JSON.stringify({id: data.rowid,title: title, description: description, price:price, image:imageData, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username")})
-                    }).then(res => res.text())
-                    .then(res => {
-                        if(res == "updated"){
-                            navigate("/");
-                            setInserted(true);
-                        }else{setInserted(false)}
-                    });
                 }
+            }
+        }else{
+            if(dealValIn == "price"){
+                let errdiv = document.getElementById("err");
+                errdiv.style.display = "block";
+                errdiv.innerHTML = `Deal off price should be less then $${price}.`;
+                document.querySelector(".AddItem_container").style.marginBottom = "3em";
+            }else if(dealValIn == "percent"){
+                let errdiv = document.getElementById("err");
+                errdiv.style.display = "block";
+                errdiv.innerHTML = `Deal off price should be less then 100%.`;
+                document.querySelector(".AddItem_container").style.marginBottom = "3em";
             }
         }
     }
     useEffect(()=>{
         var urlArr = (window.location.pathname.split("/"));
+        
         if(role == 'edit' && count == 0){
             setCount(1);            
             setLoading(true);
@@ -111,26 +150,65 @@ var AddItem = ({role})=>{
             .then(res => {   
                 setData(res); 
                 setLoading(false);
+                setUploadImageVal(res.image)
                 setTimeout(()=>{
-                    console.log(res.title);
                     document.getElementById("newItemTitle").value = res.title;
                     document.getElementById("newItemDescription").value = res.description;
                     document.getElementById("newItemPrice").value = res.price;
-                    document.getElementById("displayImage").style.display = "block";
-                    document.getElementById("displayImage").src = res.image;
                     document.getElementById("newItemQuantity").value = res.quantity;
                     document.getElementById("newItemCategory").value = res.category;     
-                    document.getElementById("newItemImage").required = false; 
+                    document.getElementById("uploadedImage").src = res.image;
                 }, 100);
             });
         }else if(role == "new"){
-            setLoading(false);            
+            setUploadImageVal(noImage);
+            setLoading(false);     
         }
     });
+    var dealcheckclick = ()=>{
+        var dealCheck = document.getElementById("addDealCheckbox").checked;
+        if(dealCheck){
+            document.getElementById("percentRadio").disabled = false;
+            document.getElementById("priceRadio").disabled = false;
+            setAddDeal(true);
+        }
+        else{
+            document.getElementById("percentRadio").disabled = true;
+            document.getElementById("priceRadio").disabled = true;
+            document.getElementById("percentDealValue").value = "";
+            document.getElementById("priceDealValue").value = "";
+            document.getElementById("percentDealValue").disabled = true;
+            document.getElementById("priceDealValue").disabled = true;
+            document.getElementById("priceRadio").checked = false;
+            document.getElementById("percentRadio").checked = false;
+            setAddDeal(false);
+
+        }
+    }
+    var dealRadioChange = ()=>{
+        if(document.getElementById("priceRadio").checked){            
+            document.getElementById("priceDealValue").disabled = false;
+            document.getElementById("percentDealValue").value = "";
+            document.getElementById("percentDealValue").disabled = true;
+            setDealValIn("price");
+        }else{
+            document.getElementById("priceDealValue").value = "";
+            document.getElementById("percentDealValue").disabled = false;
+            document.getElementById("priceDealValue").disabled = true;
+            setDealValIn("percent");
+        }
+    }
+    var imageChange = (evt)=>{
+        var tgt = evt.target.files;
+        var fileReader = new FileReader();
+        fileReader.onload = function(){
+            document.getElementById("uploadedImage").src = fileReader.result;
+            document.getElementById("labelToUploadImage").innerHTML = "Change item image";
+
+        };
+        fileReader.readAsDataURL(tgt[0]);
+    };
     var returnDiv = ()=>{
-        // if(loading == false){
-        //     
-        // }
         if(sessionStorage.getItem("username") == null){
             <Error404 errorMessage="Please Sign in to add item" linkAvailable = "true"/>
         }else if(inserted == true){
@@ -140,44 +218,88 @@ var AddItem = ({role})=>{
         else if(loading == true){
             return <LoadingSpinner />            
         }else{
-            return <form onSubmit={submitForm}>
+            return <div className="addItemForm">
+                <form onSubmit={submitForm}>
                     <div className="alert alert-danger" id="err" style={{display: "none"}}></div>
-                    <div>
-                        <label> Title </label>
-                        <input type="text" placeholder="Item Title" id="newItemTitle" className="form-control" required autoFocus/>
-                    </div><br />
-                    <div>
-                        <label> Discription </label>
-                        <textarea rows="4" id="newItemDescription" placeholder="Itme Description" className="form-control" required></textarea>
+                    {/* form to add items */}
+                    <div className="addItemGrid">
+                        <div className="addItemImageGrid">
+                            <div>
+                                <div className="imageInImageUploader">
+                                    <div>
+                                        <div className="itemImageInUpload">
+                                            <img src={uploadImageVal} id="uploadedImage" className="ItemImage"/>
+                                        </div>
+                                        <div className="uploadNewImage">
+                                            <input type="file" accept="image/*" id="uploadImage" onChange={imageChange} />
+                                            <label htmlFor="uploadImage"><i id="uploadIcon" className="fa fa-upload"></i><span id="labelToUploadImage">Choose image for item</span></label><br/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><br />
+                        </div>
+                        <div className="addItemInfoGrid">
+                            <div>
+                                <label> Title </label>
+                                <input type="text" placeholder="Item Title" id="newItemTitle" className="form-control" required autoFocus/>
+                            </div><br/>
+                            <div>
+                                <label> Discription </label>
+                                <textarea rows="4" id="newItemDescription" placeholder="Itme Description" className="form-control" required></textarea>
+                            </div><br />
+                            <div>
+                                <label> Actual Price </label>
+                                <input type="text" placeholder="Actual Price" id="newItemPrice" className="form-control" required/>
+                            </div><br />
+                            <div>
+                            <label> Category </label>
+                            <select id="newItemCategory" className="form-control" defaultValue="Fashion">
+                                <option value="Toys">Toys</option>
+                                <option value="Home">Home</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value="Electronics">Electronics</option>
+                            </select>
+                        </div><br />
+
+                        </div>
                     </div>
                     <div>
-                        <label> Price </label>
-                        <input type="text" placeholder="Price" id="newItemPrice" className="form-control" required/>
-                    </div><br />
-                    <div>
-                        <label> Image </label>
-                        <img src="" style={{display: "none", width:"10em", marginBottom: "1em"}} id="displayImage" />
-                        <input type="file" id="newItemImage" className="form-control" accept="image/*" required/>
-                    </div><br />
-                    <div>
                         <label> Quantity </label>
-                        <input type="number" placeholder="Item Quantity" id="newItemQuantity" className="form-control" min="1" required/>
+                        <input type="number" placeholder="Item Quantity" id="newItemQuantity" className="form-control" min="1" required/><br/>
+                        <div id="dealSection">    
+                            <div id="dealCheckboxSession" style={{marginTop: "7px"}}>
+                                <input className="form-check-input" type="checkbox" id="addDealCheckbox" onChange={dealcheckclick.bind(this)}/>&nbsp;
+                                <label className="form-check-label" htmlFor="flexCheckDefault">
+                                    Add deal
+                                </label>&emsp;&emsp;
+                            </div>
+                            <div id="addDealRadio">
+                                <input className="form-check-input" type="radio" name="deal" id="percentRadio" onChange={dealRadioChange.bind(this)} style={{marginTop: "10px"}} disabled/>&nbsp;
+                                <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                    <div className="input-group mb-3">
+                                        <input type="number" id="percentDealValue" className="form-control" disabled/>
+                                        <span className="input-group-text" id="basic-addon2">%</span>
+                                    </div>
+                                </label>&emsp;
+                                <input className="form-check-input" type="radio" id="priceRadio" name="deal" onChange={dealRadioChange.bind(this)}  style={{marginTop: "10px"}} disabled />&nbsp;
+                                <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text">$</span>
+                                        <input type="number" id="priceDealValue" className="form-control" disabled/>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                     </div><br />
-                    <div>
-                        <label> Category </label>
-                        <select id="newItemCategory" className="form-control" defaultValue="Fashion">
-                            <option value="Toys">Toys</option>
-                            <option value="Home">Home</option>
-                            <option value="Fashion">Fashion</option>
-                            <option value="Electronics">Electronics</option>
-                        </select>
-                    </div><br />
-                    {role == "new" ? 
-                        <input type="submit" value="Add" className="btn btn-primary" />
-                    : 
-                        <input type="submit" value="Update" className="btn btn-primary" />
-                    }
+                    <div id="addItemSubmitBtn">
+                        {role == "new" ? 
+                            <input type="submit" value="Add" className="btn btn-submit" />
+                        : 
+                            <input type="submit" value="Update" className="btn btn-submit" />
+                        }
+                    </div>
                 </form>
+            </div>
         }
     }
     return(
