@@ -1,5 +1,5 @@
 var express = require("express");
-var sassMiddleware = require("node-sass-middleware");
+var sassMiddleware = require("sass-middleware");
 var path = require("path");
 var sqlite3 = require("sqlite3");
 var { open } = require("sqlite"); 
