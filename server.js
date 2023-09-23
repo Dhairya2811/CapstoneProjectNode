@@ -409,15 +409,25 @@ server.post("/updateItem", async (req, res)=>{
     var image = data.image;
     var imageName = data.imageName;
     var name = data.username;
-    var deal = false;
-    var dealText = data.dealText;
+    var deal = data.deal;
+    var deal_title = data.dealText;
     var dealPrice = data.dealPrice;
-    if(dealText != ""  || dealText != undefined){
-        deal = true;
-    }
-    console.log(`deal text: ${dealText}\ndeal price: ${dealPrice} \nDeal: ${deal}`);
-    var sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? , category = ?, name = ? WHERE rowid = ?";
+    var sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? "+
+    ", category = ?, name = ? WHERE rowid = ?";
     var params = [title, description, price,image, imageName, quantity, category, name, id];
+    console.log(`
+        title: ${title},
+        description: ${description},
+        price:${price},
+        image :${image},
+        image Name: ${imageName},
+        quantity: ${quantity},
+        category: ${category},
+        name: ${name}
+        deal: ${deal}
+        deal_title: ${deal_title}
+        dealPrice: ${dealPrice}
+    `)
     // (await db).all(sql, params).then(
     //     (err, rows)=>{
     //         if(err){console.log(err);}

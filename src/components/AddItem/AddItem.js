@@ -15,10 +15,15 @@ var AddItem = ({role})=>{
 
     var navigate = useNavigate();
 
-    var submitData = (jsonObj)=>{
-        console.log("In SubmitData");
+    var submitData = (role, jsonObj)=>{
         document.getElementById("err").style.display = "none";
-        fetch("/addItem", {
+        var url;
+        if(role == "add"){
+            url = "/addItem"
+        }else if(role == "edit"){
+            url = "/updateItem"
+        }
+        fetch(url, {
             method:"post",
             headers:{
                 "Content-Type":"application/json",
@@ -70,7 +75,53 @@ var AddItem = ({role})=>{
             })
     };
 
-
+    var prepJsonResultEdit = (rowid, title, description, 
+        price, quantity, category, image, imageName, 
+        deal, dealText = "", dealPrice = 0.00)=>{
+        var username = sessionStorage.getItem("username");
+        /**
+               var id = data.id;
+               var title = data.title;
+               var description = data.description;
+               var price = data.price;
+               var quantity = data.quantity;
+               var category = data.category;
+               var image = data.image;
+               var imageName = data.imageName;
+               var name = data.username;
+               var deal = data.deal;
+               var deal_title = data.dealText;
+               var dealPrice = data.dealPrice;
+             */
+        if(deal){
+            return JSON.stringify({
+                id: rowid,
+                title: title, 
+                description: description, 
+                price:price, 
+                quantity: quantity, 
+                category: category, 
+                image: image, 
+                imageName:imageName ,
+                username: username,
+                deal: deal,
+                dealText: dealText,
+                dealPrice: dealPrice});
+        }
+        return JSON.stringify({
+            id: rowid,
+            title: title, 
+            description: description, 
+            price:price, 
+            quantity: quantity, 
+            category: category, 
+            image: image, 
+            imageName:imageName ,
+            username: username,
+            deal: deal,
+            dealText: "",
+            dealPrice: 0.00});
+    }
 
 
 
@@ -112,13 +163,13 @@ var addItem = (image, title, description, price, category, quantity, passDeals, 
         var imageName = (filepathtemparr[filepathtemparr.length-1]);
         if(addDeal && passDeals ){
             reader.onload = ()=>{
-                submitData(prepJsonResult(title, description, price, reader.result, imageName, 
+                submitData("add", prepJsonResult(title, description, price, reader.result, imageName, 
                     quantity, category, true, dealPrice, dealText));
             };
         }
         else{
             reader.onload = ()=>{
-                submitData(prepJsonResult(title, description, price, reader.result, imageName, 
+                submitData("add", prepJsonResult(title, description, price, reader.result, imageName, 
                     quantity, category, false));
             };
         }
@@ -127,10 +178,10 @@ var addItem = (image, title, description, price, category, quantity, passDeals, 
         var image = noImage;
         var imageName = 'No Image'
         if(addDeal && passDeals){
-            submitData(prepJsonResult(title, description, price, image, imageName, 
+            submitData("add", prepJsonResult(title, description, price, image, imageName, 
                 quantity, category, true, dealPrice, dealText));
         }else{
-            submitData(prepJsonResult(title, description, price, image, imageName, 
+            submitData("add", prepJsonResult(title, description, price, image, imageName, 
                 quantity, category, false));
         }
     }
@@ -147,25 +198,46 @@ var editItem = (image, title, description, price, category, quantity, passDeals,
         imageName = (filepathtemparr[filepathtemparr.length-1]);
         reader.onload= ()=>{
             /**
-             * JSON.stringify({id: data.rowid, title: title, description: description, price:price, image:reader.result, 
-             * imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username"), 
-             * dealPrice: dealPrice, dealText: dealText})
+               var id = data.id;
+               var title = data.title;
+               var description = data.description;
+               var price = data.price;
+               var quantity = data.quantity;
+               var category = data.category;
+               var image = data.image;
+               var imageName = data.imageName;
+               var name = data.username;
+               var deal = data.deal;
+               var deal_title = data.dealText;
+               var dealPrice = data.dealPrice;
              */ 
             if(addDeal && passDeals){
-                console.log("edit the item with the deal and with new image.");
+                console.log("edit with new image and deal");
+                submitData("edit", prepJsonResultEdit(data.rowid, title, description, price, quantity, category, 
+                    reader.result, imageName, true, dealText, dealPrice));
             }else{
-                console.log("edit item without deal but with new image.");
+                console.log("edit with new image but without deal");
+                submitData("edit", prepJsonResultEdit(data.rowid, title, description, price, quantity, category, 
+                    reader.result, imageName, false));
             }
         }
     }
     // if there is no new image then
     else{
         var imageData = data.image;
-        var imageName = data.imageName;
+        imageName = data.imageName;
+        console.log(`
+            addDeal: ${addDeal}
+            passDeal: ${passDeals}
+        `);
         if(addDeal && passDeals){
-            console.log("edit the item with the deal and with new image.");
+            console.log("edit with old imgage with deal");
+            submitData("edit", prepJsonResultEdit(data.rowid, title, description, price, quantity, category, 
+                imageData, imageName, true, dealText, dealPrice));
         }else{
-            console.log("edit item without deal but with new image.");
+            console.log("edit with old image without deal");
+            submitData("edit", prepJsonResultEdit(data.rowid, title, description, price, quantity, category, 
+                imageData, imageName, false));
         }
     }
 };
@@ -182,6 +254,7 @@ var submitForm = async (event) => {
     var dealPrice = 0.00;
     var passDeals = false;
     var error = false;
+    console.log(`addDeal: ${addDeal}`);
     if(addDeal){
         // check if the deal is appropreate
         // checking if deal is in price
@@ -216,6 +289,12 @@ var submitForm = async (event) => {
     }
     // checking if new item will be added or old item will be edited.
     if(!error){
+        console.log(`
+            error: ${error}
+            price: ${price}
+            role: ${role}
+            priceError: ${priceError(price)}
+        `);  
         if(role == "new"){
             // if the new price is null, then give the error.
             if(priceError(price)){
@@ -233,151 +312,31 @@ var submitForm = async (event) => {
     }
 };
 
-// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-    // var submitForm = (event) => {
-    //     event.preventDefault();
-    //     var image = event.target[0];
-    //     var title = event.target[1].value;
-    //     var description = event.target[2].value;
-    //     var price = event.target[3].value;
-    //     var category = event.target[4].value;
-    //     var quantity = event.target[5].value;
-    //     var dealText;
-    //     var dealPrice;
-    //     var passDeals = false;
-    //     if(dealValIn == "price"){
-    //         var offPrice = event.target[10].value;
-    //         if(offPrice<price){
-    //             passDeals = true;
-    //             dealText = `$${offPrice} off`;
-    //             dealPrice = price-offPrice;
-    //         }else{passDeals = false;}
-    //     }else if(dealValIn == "percent"){
-    //         var offPrice = event.target[8].value;
-    //         if(offPrice<100){
-    //             passDeals = true;
-    //             dealText = `${offPrice}% off`;
-    //             dealPrice = price-(price*offPrice/100);
-    //         }
-    //         else{passDeals = false;}
-    //     }
-    //     if(passDeals){
-    //         if(role == "new"){
-    //             if(isNaN(price)){
-    //                 let errdiv = document.getElementById("err");
-    //                 errdiv.style.display = "block";
-    //                 errdiv.innerHTML = "Please enter correct number as a price.";
-    //             }else{     
-    //             //  -------------------------------------------------------------------------------------------------------
-    //                 // remove the err block from the page as there is not error 
-    //                 let errdiv = document.getElementById("err");
-    //                 errdiv.style.display = "none";
-    //                 errdiv.innerHTML = "";
-    //             //  -------------------------------------------------------------------------------------------------------
-    //                 // checking if there is an image uploaded.
-    //                 if(image.files.length == 1){
-    //                     var reader = new FileReader(); 
-    //                     reader.readAsDataURL(image.files[0]);
-    //                     let filepathtemp = image.value;
-    //                     let filepathtemparr = String(filepathtemp).split("\\");
-    //                     var imageName = (filepathtemparr[filepathtemparr.length-1])
-    //                     if(addDeal){
-    //                         // send dealText and dealPrice with other data too.
-    //                         reader.onload= ()=>{
-    //                             submitData(prepJsonResult(title, description, price, reader.result, imageName, 
-    //                                 quantity, category, true, dealPrice, dealText));
-    //                         }
-    //                     }else{
-    //                         // send the normal data
-    //                         reader.onload= ()=>{
-    //                             submitData(prepJsonResult(title, description, price, reader.result, imageName, 
-    //                                 quantity, category, false));
-    //                         }
-    //                     } 
-    //                 }
-    //                 // if there is no image then 
-    //                 else{
-    //                     var image = noImage;
-    //                     var imageName = 'No Image'
-    //                     if(addDeal){
-    //                         submitData(prepJsonResult(title, description, price, image, imageName, 
-    //                             quantity, category, true, dealPrice, dealText));
-    //                     }else{
-    //                         submitData(prepJsonResult(title, description, price, image, imageName, 
-    //                             quantity, category, false));
-    //                     }
-
-    //                 }
-    //             }    
-    //         }else if(role == "edit"){
-    //             console.log("edit deal")
-    //             if(isNaN(price)){
-    //                 let errdiv = document.getElementById("err");
-    //                 errdiv.style.display = "block";
-    //                 errdiv.innerHTML = "Please enter correct number as a price.";
-    //                 document.querySelector(".AddItem_container").style.marginBottom = "3em";
-    //             }else{
-    //                 let errdiv = document.getElementById("err");
-    //                 errdiv.style.display = "none";
-    //                 errdiv.innerHTML = "";
-    //                 var reader = new FileReader();
-    //                 var imageName = "";
-                    
-    //                 if(image.files[0] != null){
-    //                     reader.readAsDataURL(image.files[0])
-    //                     let filepathtemp = image.value;
-    //                     let filepathtemparr = String(filepathtemp).split("\\");
-    //                     var imageName = (filepathtemparr[filepathtemparr.length-1]);
-    //                     reader.onload= ()=>{
-    //                         // JSON.stringify({id: data.rowid, title: title, description: description, price:price, image:reader.result, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username"), dealPrice: dealPrice, dealText: dealText})
-                            
-    //                     }
-    //                 }else{
-    //                     var imageData = data.image;
-    //                     var imageName = data.imageName;
-    //                     fetch("/updateItem", {
-    //                         method:"post",
-    //                         headers:{
-    //                             "Content-Type":"application/json",
-    //                         },
-    //                         credentials: "include",
-    //                         body: JSON.stringify({id: data.rowid,title: title, description: description, price:price, image:imageData, imageName:imageName ,quantity: quantity, category: category, username: sessionStorage.getItem("username"), dealPrice: dealPrice, dealText: dealText})
-    //                     }).then(res => res.text())
-    //                     .then(res => {
-    //                         if(res == "updated"){
-    //                             navigate("/");
-    //                             setInserted(true);
-    //                         }else{setInserted(false)}
-    //                     });
-    //                 }
-    //             }
-    //         }
-    //     }else{
-    //         console.log("no deal")
-    //         if(dealValIn == "price"){
-    //             let errdiv = document.getElementById("err");
-    //             errdiv.style.display = "block";
-    //             errdiv.innerHTML = `Deal off price should be less then $${price}.`;
-    //             document.querySelector(".AddItem_container").style.marginBottom = "3em";
-    //         }else if(dealValIn == "percent"){
-    //             let errdiv = document.getElementById("err");
-    //             errdiv.style.display = "block";
-    //             errdiv.innerHTML = `Deal off price should be less then 100%.`;
-    //             document.querySelector(".AddItem_container").style.marginBottom = "3em";
-    //         }
-    //     }
-    // }
+var dealValueAdder = (deal_title)=>{
+    document.getElementById("percentRadio").disabled = false;
+    document.getElementById("priceRadio").disabled = false;
+    if(deal_title.includes("$")){
+        var stringArr = deal_title.split(" ");
+        var numberStr = stringArr[0];
+        document.getElementById("percentRadio").checked = false;
+        document.getElementById("priceRadio").checked = true;
+        document.getElementById("percentDealValue").value = "";
+        document.getElementById("priceDealValue").disabled = false;
+        document.getElementById("percentDealValue").disabled = true;
+        document.getElementById("priceDealValue").value = numberStr.substring(1);
+        setDealValIn("price");
+    }else if(deal_title.includes("%")){
+        var stringArr = deal_title.split(" ");
+        var numberStr = stringArr[0];
+        document.getElementById("priceRadio").checked = false;
+        document.getElementById("percentRadio").checked = true;
+        document.getElementById("priceDealValue").value = "";
+        document.getElementById("percentDealValue").disabled = false;
+        document.getElementById("priceDealValue").disabled = true;
+        document.getElementById("percentDealValue").value = numberStr.substring(0, numberStr.length -1);
+        setDealValIn("percent");
+    }
+};
 
     useEffect(()=>{
         var urlArr = (window.location.pathname.split("/"));
@@ -399,6 +358,12 @@ var submitForm = async (event) => {
                     document.getElementById("newItemQuantity").value = res.quantity;
                     document.getElementById("newItemCategory").value = res.category;     
                     document.getElementById("uploadedImage").src = res.image;
+                    if(res.deal){
+                        document.getElementById("addDealCheckbox").checked = true;
+                        var deal_title = res.deal_title;
+                        dealValueAdder(deal_title);
+                        setAddDeal(true);
+                    }
                 }, 100);
             });
         }else if(role == "new"){
@@ -406,6 +371,7 @@ var submitForm = async (event) => {
             setLoading(false);     
         }
     });
+
     var dealcheckclick = ()=>{
         var dealCheck = document.getElementById("addDealCheckbox").checked;
         if(dealCheck){
