@@ -24,7 +24,7 @@ var ItemDisplay = ({item}) => {
                     <></>
                 }
                 <div className="itemtitleText">{item.title}</div>
-                <span className="price">$ {item.price}</span>
+                <span className="price">$ {item.deal == 1 ? item.dealPrice : item.price}</span>
             </div>
         </div>
     );

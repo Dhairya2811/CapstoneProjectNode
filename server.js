@@ -130,7 +130,7 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
     }else if(name == "Deals"){
         setReturn("index", "Deals");
         sql = `SELECT rowid, * FROM items WHERE quantity > ? AND deal=1 ORDER BY price`;
-        params = [ 0];
+        params = [0];
         (await db).all(sql, params).then(
             data=>{
                 setReturn("data", data);
@@ -328,7 +328,7 @@ server.post("/signIn", async (req, response)=>{
     })
 });
 
-server.post("/addItem", async (req, res)=>{
+server.post("/addItem", async (req, response)=>{
     var data = req.body;
     var title = data.title;
     var description = data.description;
@@ -338,17 +338,40 @@ server.post("/addItem", async (req, res)=>{
     var image = data.image;
     var imageName = data.imageName;
     var name = data.username;
-    var dealText = data.dealText;
+    var deal = data.deal;
+    var deal_title = data.dealText;
     var dealPrice = data.dealPrice;
-    console.log(`deal text: ${dealText}\ndeal price: ${dealPrice}`);
-    var sql = "INSERT INTO items(title, description, price, image, imageName, quantity, category, name) Values (?, ?, ?, ?, ?, ?, ?, ?)";
-    var params = [title, description, price,image, imageName, quantity, category, name];
-    (await db).all(sql, params).then(
-        (err, rows)=>{
-            if(err){console.log(err);}
-            res.send("inserted");
+    var sql, params;
+
+    if(deal){
+        sql = "INSERT INTO items(title, description, price, image, imageName, quantity, category," +  
+            "name, deal, deal_title, dealPrice) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        params = [title, description, price,image, imageName, quantity, category, name, deal, deal_title, dealPrice];
+    }
+    else{
+        sql = "INSERT INTO items(title, description, price, image, imageName, quantity, category," +  
+            "name, deal) Values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        params = [title, description, price,image, imageName, quantity, category, name, deal];
+    }
+    /**
+     * Title: ${title}, 
+     * Description:${description}, 
+     * Price:${price}, 
+     * Quantity:${quantity}, 
+     * Category:${category}, 
+     * Image:${image}, 
+     * Image Name:${imageName},
+     * Name:${name},
+     * Deal:${deal}
+     * deal_title:${deal_title},
+     * dealPrice:${dealPrice}
+     */
+    (await db).all(sql, params).then((err)=>{
+        if(err){
+            console.log(err);
         }
-    );
+        response.send("inserted");
+    });
 });
 server.post("/addToCart", async (req, res)=>{
     var data = req.body;
@@ -395,12 +418,12 @@ server.post("/updateItem", async (req, res)=>{
     console.log(`deal text: ${dealText}\ndeal price: ${dealPrice} \nDeal: ${deal}`);
     var sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? , category = ?, name = ? WHERE rowid = ?";
     var params = [title, description, price,image, imageName, quantity, category, name, id];
-    (await db).all(sql, params).then(
-        (err, rows)=>{
-            if(err){console.log(err);}
-            res.send("updated");
-        }
-    );
+    // (await db).all(sql, params).then(
+    //     (err, rows)=>{
+    //         if(err){console.log(err);}
+    //         res.send("updated");
+    //     }
+    // );
 });
 
 server.post("/successfulPurchase", async (req, res)=>{
@@ -431,5 +454,5 @@ server.listen(server_port, async ()=>{
     // (await db).all(sql).then(
     //     (err, rows)=> console.log("Updated")
     // )
-    console.log("Server is listening on port 3000");
+    console.log("Server is listening on http://localhost:3000");
 });
