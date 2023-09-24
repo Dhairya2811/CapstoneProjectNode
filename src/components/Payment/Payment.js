@@ -12,7 +12,7 @@ var DisplayPaymentItems = ({item})=>{
             <div>
                 <h3>{item.title}</h3>
                 <small>{item.category}</small>
-                <h3>${item.price}</h3>
+                <h3>${item.deal == 1 ? item.dealPrice : item.price}</h3>
             </div>
         </div>
     </div>
@@ -23,7 +23,7 @@ var Payment = ()=>{
     var navigate = useNavigate();
     useEffect(()=>{
         var subtotal = 0;
-        items.map(item=>subtotal = subtotal+parseFloat(item.price));
+        items.map(item=>subtotal = subtotal+parseFloat(item.deal == 1 ? item.dealPrice : item.price));
         var total = (subtotal+(subtotal*0.13)).toFixed(2);
         paypal.Buttons({
             createOrder: (data, actions) => {
@@ -78,7 +78,7 @@ var Payment = ()=>{
     }
     var getSubtotal = ()=>{
         var subtotal = 0;
-        items.map(item=>subtotal = subtotal+parseFloat(item.price));
+        items.map(item=>subtotal = subtotal+parseFloat(item.deal == 1 ? item.dealPrice : item.price));
         var tax = (subtotal*0.13).toFixed(2);
         var total = (subtotal+(subtotal*0.13)).toFixed(2);
         return {"subtotal": subtotal.toFixed(2), "tax": tax, "total": total};
@@ -102,7 +102,7 @@ var Payment = ()=>{
                             <hr />
                             <div className="itemList">
                                 {items.map(item=>{
-                                    return <div><span className="title">{item.title}</span>: <span className="price">${parseFloat(item.price).toFixed(2)}</span></div>
+                                    return <div><span className="title">{item.title}</span>: <span className="price">${parseFloat(item.deal == 1 ? item.dealPrice : item.price).toFixed(2)}</span></div>
                                 })}
                             </div>
                             <hr />

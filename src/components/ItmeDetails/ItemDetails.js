@@ -106,6 +106,10 @@ var ItemDetails = () => {
         </div>
     }
 
+    var checkout = ()=>{
+        sessionStorage.setItem("items", JSON.stringify([item]));
+        navigate("/payment");
+    }
   
 
     var addToCartBtnDisplay = ()=>{
@@ -118,9 +122,15 @@ var ItemDetails = () => {
                 </div>
             }
             else if(item.inCart !== true){
-                return <input className="btn btn-primary cartBtn" style={{backgroundColor: "#003A56"}} type="button" value="Add to cart" onClick={addToCart} />;
+                return <div style={{width: "100%"}}>
+                    <input className="btn btn-primary cartBtn" style={{backgroundColor: "#003A56"}} type="button" value="Add to cart" onClick={addToCart} />
+                    <input className="btn btn-success cartBtn" type="button" value="Checkout" onClick={checkout} />
+                </div>;
             }else{
-                return <input className="btn btn-danger cartBtn" type="button" value="Remove from cart" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} onClick={addToCart} />;
+                return <div style={{width: "100%"}}>
+                    <input className="btn btn-danger cartBtn" type="button" value="Remove from cart" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} onClick={addToCart} />
+                    <input className="btn btn-success cartBtn" type="button" value="Checlout" onClick={checkout} />
+                </div>;
             }
         }
     }
@@ -185,7 +195,7 @@ var ItemDetails = () => {
                             <a href="#commentsDiv"> {comments.length} 
                             {comments.length == 1 || comments.length == 0 ? <span> review</span> : <span> reviews</span>}</a>
                         </div>
-                        <h4 className="itemPrice">${item.price}</h4>
+                        <h4 className="itemPrice">${item.deal == 1 ? item.dealPrice : item.price}</h4>
                         <pre className="itemDescription">{item.description}</pre>
                         
                         {addToCartBtnDisplay()} 

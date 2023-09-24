@@ -198,7 +198,7 @@ server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"]
     var name = req.params.name;
     var sql = "";
     if(name == undefined || name == "All"){
-        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0`;
+        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category, i.deal, i.deal_title, i.dealPrice FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0`;
     }else if(name == "Lowtohigh"){
         sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price`;
     }else if(name == "Hightolow"){

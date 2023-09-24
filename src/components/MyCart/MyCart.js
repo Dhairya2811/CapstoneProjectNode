@@ -6,7 +6,6 @@ import LoadingSpinner from "../LoadingComponent/Loading";
 var DisplayPaymentItems = ({item})=>{
     var navigate = useNavigate();
     var removeClick = ()=>{
-        console.log("remove click ");
         let username = (sessionStorage.getItem("username"));
         fetch("/addToCart", {
             method:"post",
@@ -31,7 +30,7 @@ var DisplayPaymentItems = ({item})=>{
                 <h2 className="itemTitle">{item.title}</h2>
                 <small>{item.category}</small>
                 <span className="priceNdBtn">
-                    <h5 className="itemPrice">${item.price}</h5>
+                    <h5 className="itemPrice">${item.deal == 1 ? item.dealPrice : item.price}</h5>
                     <div className="btnDiv">
                         <button onClick={()=>{removeClick()}} className="removeItem btn btn-danger" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} >
                             <i className="fa fa-trash" aria-hidden="true"></i>
@@ -69,7 +68,7 @@ var MyCart = ()=>{
     
     var getSubtotal = ()=>{
         var subtotal = 0;
-        items.map(item=>subtotal = subtotal+parseFloat(item.price));
+        items.map(item=>subtotal = subtotal+parseFloat(item.deal == 1 ? item.dealPrice : item.price));
         var tax = (subtotal*0.13).toFixed(2);
         var total = (subtotal+(subtotal*0.13)).toFixed(2);
         return {"subtotal": subtotal.toFixed(2), "tax": tax, "total": total};
@@ -92,7 +91,7 @@ var MyCart = ()=>{
                         <div className="priceText">
                             <div className="itemList">
                                 {items.map(item=>{
-                                    return <div><span className="title" style={{fontWeight: "bold"}}>{item.title}</span>: <span className="price">${parseFloat(item.price).toFixed(2)}</span></div>
+                                    return <div><span className="title" style={{fontWeight: "bold"}}>{item.title}</span>: <span className="price">${parseFloat(item.deal == 1 ? item.dealPrice : item.price).toFixed(2)}</span></div>
                                 })}
                             </div>
                             <hr />
