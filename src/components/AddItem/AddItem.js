@@ -33,7 +33,7 @@ var AddItem = ({role})=>{
         }).then(res => res.text())
         .then(res => {
             console.log(res);
-            if(res == "inserted"){
+            if(res == "inserted" || res == "updated"){
                 setInserted(true);
                 navigate("/");
                 console.log(res);
@@ -289,12 +289,6 @@ var submitForm = async (event) => {
     }
     // checking if new item will be added or old item will be edited.
     if(!error){
-        console.log(`
-            error: ${error}
-            price: ${price}
-            role: ${role}
-            priceError: ${priceError(price)}
-        `);  
         if(role == "new"){
             // if the new price is null, then give the error.
             if(priceError(price)){

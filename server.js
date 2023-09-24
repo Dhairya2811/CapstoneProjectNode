@@ -412,28 +412,23 @@ server.post("/updateItem", async (req, res)=>{
     var deal = data.deal;
     var deal_title = data.dealText;
     var dealPrice = data.dealPrice;
-    var sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? "+
-    ", category = ?, name = ? WHERE rowid = ?";
-    var params = [title, description, price,image, imageName, quantity, category, name, id];
-    console.log(`
-        title: ${title},
-        description: ${description},
-        price:${price},
-        image :${image},
-        image Name: ${imageName},
-        quantity: ${quantity},
-        category: ${category},
-        name: ${name}
-        deal: ${deal}
-        deal_title: ${deal_title}
-        dealPrice: ${dealPrice}
-    `)
-    // (await db).all(sql, params).then(
-    //     (err, rows)=>{
-    //         if(err){console.log(err);}
-    //         res.send("updated");
-    //     }
-    // );
+    var sql, params;
+    if(deal){
+        sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? "+
+        ", category = ?, name = ?, deal = ?, deal_title = ?, dealPrice = ? WHERE rowid = ?";
+        params = [title, description, price,image, imageName, quantity, category, name, deal, deal_title, dealPrice, id];
+    }
+    else{
+        sql = "UPDATE items SET title = ?, description = ?, price = ?, image = ?, imageName = ?,quantity = ? "+
+        ", category = ?, name = ?, deal = ? WHERE rowid = ?";
+        params = [title, description, price,image, imageName, quantity, category, name, deal, id];
+    }
+    (await db).all(sql, params).then(
+        (err, rows)=>{
+            if(err){console.log(err);}
+            res.send("updated");
+        }
+    );
 });
 
 server.post("/successfulPurchase", async (req, res)=>{
@@ -460,9 +455,9 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = "UPDATE items SET deal_title='Best deal' WHERE rowid=31";
+    // var sql = `DELETE FROM users where username like "%das%"`;
     // (await db).all(sql).then(
-    //     (err, rows)=> console.log("Updated")
+    //     (err, rows)=> console.log(err)
     // )
     console.log("Server is listening on http://localhost:3000");
 });
