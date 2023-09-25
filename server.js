@@ -318,7 +318,6 @@ server.post("/signIn", async (req, response)=>{
             bcrypt.compare(password, user.password, (err, res)=>{
                 if(err){console.log(err);}
                 if(res){
-                    console.log(username)
                     response.send(username);
                 }else{
                     response.send("incorrect password")
@@ -380,9 +379,6 @@ server.post("/addToCart", async (req, res)=>{
     var sql = "INSERT INTO cart (name, itemID) VALUES (?, ?)";
     var sql2 = "DELETE FROM cart WHERE name=? AND itemID=?"
     var params = [username, itemid];
-    console.log(data.cartAction);
-    console.log("id: "+ itemid);
-    console.log("username: "+ username);
     if(data.cartAction){
         (await db).all(sql, params).then(
             (err, rows)=>{
@@ -442,6 +438,13 @@ server.post("/successfulPurchase", async (req, res)=>{
             if(err){console.log(err);}
         });
     }
+    var sql2 = `DELETE FROM cart WHERE name = ? and itemID = ?`;
+    var params2= [data.userName, parseInt(items[0])];
+    console.log(params2);
+    (await db).all(sql2, params2)
+    .then((err, rows)=>{
+        if(err){console.log(err);}
+    });
     res.send("purchased");
 });
 

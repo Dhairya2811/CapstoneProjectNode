@@ -41,6 +41,7 @@ var Payment = ()=>{
                 // const transaction = orderData.purchase_units[0].payments.captures[0];
                 // alert(`The order has been placed successfully.\nThank you for shopping.`);
                 document.getElementById("purchaseMessage").style.display = "block";
+                var count = 0;
                 setTimeout(()=>{
                     var userName = sessionStorage.getItem("username");
                     var itemIds = [];
@@ -49,27 +50,32 @@ var Payment = ()=>{
                         itemIds.push(item.rowid);
                         itemQuantities.push(item.quantity);
                     });
-                    fetch("/successfulPurchase", {
-                        method: "post",
-                        headers:{
-                            "Content-Type":"application/json",
-                        },
-                        credentials:"include",
-                        body: JSON.stringify({userName: userName, items: [itemIds, itemQuantities]})
-                    })
-                    .then(res => res.text())
-                    .then(res => {
-                        console.log(res)
-                        if(res == "purchased"){        
-                            document.getElementById("purchaseMessage").style.display = "none";
-                            navigate("/");
-                        }
-                    });
+                    if(count == 0){
+                        fetch("/successfulPurchase", {
+                            method: "post",
+                            headers:{
+                                "Content-Type":"application/json",
+                            },
+                            credentials:"include",
+                            body: JSON.stringify({userName: userName, items: [itemIds, itemQuantities]})
+                        })
+                        .then(res => res.text())
+                        .then(res => {
+                            console.log(res)
+                            if(res == "purchased"){
+                                document.getElementById("purchaseMessage").style.display = "none";
+                                navigate("/");
+                            }
+                        });
+                        console.log(count);
+                        count++;
+                    }
                 }, 2000);
                 // alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
               });
             }
           }).render('#paypal-button-container');
+          console.log("effect call.");
     });
     
     if(sessionStorage.getItem("items")!= null){
