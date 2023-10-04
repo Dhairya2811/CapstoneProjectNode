@@ -352,19 +352,6 @@ server.post("/addItem", async (req, response)=>{
             "name, deal) Values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         params = [title, description, price,image, imageName, quantity, category, name, deal];
     }
-    /**
-     * Title: ${title}, 
-     * Description:${description}, 
-     * Price:${price}, 
-     * Quantity:${quantity}, 
-     * Category:${category}, 
-     * Image:${image}, 
-     * Image Name:${imageName},
-     * Name:${name},
-     * Deal:${deal}
-     * deal_title:${deal_title},
-     * dealPrice:${dealPrice}
-     */
     (await db).all(sql, params).then((err)=>{
         if(err){
             console.log(err);
@@ -448,6 +435,72 @@ server.post("/successfulPurchase", async (req, res)=>{
     res.send("purchased");
 });
 
+server.post("/starreview", async (req, res)=>{
+    var data = req.body;
+    var rate = data.rate;
+    var username  = data.username;
+    var itemid = data.itemid;
+
+    var sql = "SELECT rowid FROM rates WHERE itemid = ? and username = ?";
+    var params = [itemid, username];
+    (await db).all(sql, params)
+    .then(async row=>{
+        if(row.length == 0){
+            var sql = "INSERT INTO rates (itemid, username, rate) VALUES (?, ?, ?)";
+            var params = [itemid, username, rate];
+            (await db).run(sql, params, (err, rows)=>{
+                if(err){
+                    res.send("ERROR")
+                }else{
+                    res.send("reviewed");
+                }
+            });
+        }else{
+            var sql = "UPDATE rates SET rate = ? WHERE itemid = ? and username = ?";
+            var params = [rate, itemid, username];
+            (await db).run(sql, params, (err, rows)=>{
+                if(err){
+                    res.send("ERROR")
+                }else{
+                    res.send("reviewed");
+                }
+            });
+        }
+    });
+
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 
+});
+
+server.get("/starreview", async (req, res)=>{
+    var username = req.query["username"];
+    var itemid = req.query["itemid"];
+    var sql = "SELECT rate FROM rates WHERE itemid = ? AND username = ?;"
+    var params = [itemid, username];
+    (await db).all(sql, params)
+    .then(row=>{
+        res.json({"res": row});
+    });
+});
+
+server.get("/aveReview", async (req, res)=>{
+    var itemid = req.query["itemid"];
+    var sql = 'select avg(rate) as average from rates where itemid = ?'
+    var params = [itemid];
+    (await db).all(sql, params)
+    .then((row)=>{
+        console.log(row[0].average);
+        res.json({"avg": row[0].average});
+    });
+});
+
 server.use(express.static('public')); // use this middleware before get method.
 
 server.get("/:path", (req, res)=>{
@@ -458,9 +511,13 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `DELETE FROM users where username like "%das%"`;
+    // var sql = `CREATE TABLE rates (
+    //     itemid TEXT,
+    //     username TEXT,
+    //     rate INTEGER NOT NULL
+    // )`;
     // (await db).all(sql).then(
     //     (err, rows)=> console.log(err)
-    // )
+    // );
     console.log("Server is listening on http://localhost:3000");
 });

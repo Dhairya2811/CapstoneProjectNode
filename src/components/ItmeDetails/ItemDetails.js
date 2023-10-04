@@ -1,7 +1,9 @@
 import {useEffect, useState} from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Error404 from "../Error404/Error404";
+import StarRating from "../StarRating/StarRating";
 import LoadingSpinner from "../LoadingComponent/Loading";
+import { FaStar } from "react-icons/fa";
 
 var ItemDetails = () => {
     var [item, setItem] = useState();
@@ -11,6 +13,9 @@ var ItemDetails = () => {
     var location = useLocation();
     var [commentLoading, setCommentLoading] = useState(true);
     var [comments, setComments] = useState([]);
+    var [starReviewOpen, setStarReviewOpen] = useState(false);
+    var [reviewLoading, setReviewLoading] = useState(true);
+    var [rates, setRates] = useState(0);
 
     useEffect(()=>{
         if(itemLoaded == false){
@@ -25,6 +30,9 @@ var ItemDetails = () => {
         if(commentLoading == true){
             getCommentData();
         }
+        if(reviewLoading == true){
+            getReviewData();
+        }
     }, [location]);
     var getCommentData = ()=>{
         fetch("/getComments/"+id)
@@ -34,6 +42,19 @@ var ItemDetails = () => {
             setComments(res);
         });
     }
+    var getReviewData = ()=>{
+        setReviewLoading(false);
+        fetch("/aveReview/?itemid="+id)
+        .then(res=>res.json())
+        .then(res=>{
+            for(var i = 1; i<=5; i++){
+                document.getElementById("star"+i).style.color="#E8F0F4";
+            }
+            for(var i = 1; i<=Math.floor(res.avg); i++){
+                document.getElementById("star"+i).style.color="#003A56";
+            }
+        });
+    };
     var addToCart = ()=>{
         let username = (sessionStorage.getItem("username"));
         let itemID = id;
@@ -171,6 +192,33 @@ var ItemDetails = () => {
             })}</div>
         }
     }
+    const Overlay = ({ starReviewOpen }) => {
+        var style = {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: document.body.scrollWidth,
+            height: document.body.scrollHeight,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 999
+        };
+        return (
+          <>
+            {starReviewOpen && <div className="overlay" style={style}></div>}
+          </>
+        );
+    };
+    var StarReviewClick = ()=>{
+        setStarReviewOpen(true);
+    };
+
+    var closeClick = ()=>{
+        setTimeout(()=>{
+            setStarReviewOpen(false);
+            getReviewData();
+        }, 50);
+    };
+
     var returnFun = ()=>{
         if(item == undefined && !itemLoaded){
             return <div style={{ zIndex: 1}}>
@@ -192,6 +240,25 @@ var ItemDetails = () => {
                         <h1 className="title">{item.title}</h1>
                         <small>{item.category}</small>
                         <div className="reviewDiv">
+                            {/* create the review with the stars and rate out of 5. */}
+                            <button title="Give your review to this product." 
+                                style={{backgroundColor: "transparent", borderColor: "transparent", marginLeft: "-10"}}
+                                onClick={StarReviewClick}>
+                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star1" />&thinsp;
+                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star2" />&thinsp;
+                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star3" />&thinsp;
+                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star4" />&thinsp;
+                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star5" />
+                            </button><br/>
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
+                                {/* Add the component for the rates */}
+                                {sessionStorage.getItem("username") != null && starReviewOpen ? 
+                                <>
+                                    <Overlay starReviewOpen={starReviewOpen} />
+                                    <StarRating starReviewOpen={starReviewOpen} closeClick={closeClick} itemid={id}/>
+                                </> : <></>}
+{/* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
+                                
                             <a href="#commentsDiv"> {comments.length} 
                             {comments.length == 1 || comments.length == 0 ? <span> review</span> : <span> reviews</span>}</a>
                         </div>
