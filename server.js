@@ -5,6 +5,7 @@ var sqlite3 = require("sqlite3");
 var { open } = require("sqlite"); 
 var bcrypt = require("bcrypt");
 const cors = require("cors");
+const { param } = require("jquery");
 
 // var express = require("express");
 
@@ -467,16 +468,6 @@ server.post("/starreview", async (req, res)=>{
             });
         }
     });
-
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
 });
 
 server.get("/starreview", async (req, res)=>{
@@ -501,6 +492,17 @@ server.get("/aveReview", async (req, res)=>{
     });
 });
 
+server.post("/addAd", async (req, res)=>{
+    var data = req.body;
+    var url = data.url;
+    var title = data.title;
+    var description = data.description;
+    var itemid = data.itemid;
+
+    console.log(`data: ${data}`);
+    res.send("post req to add Ad");
+});
+
 server.use(express.static('public')); // use this middleware before get method.
 
 server.get("/:path", (req, res)=>{
@@ -511,13 +513,9 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `CREATE TABLE rates (
-    //     itemid TEXT,
-    //     username TEXT,
-    //     rate INTEGER NOT NULL
-    // )`;
+    // var sql = "SELECT * FROM users";
     // (await db).all(sql).then(
-    //     (err, rows)=> console.log(err)
+    //     (err)=> console.log(err)
     // );
     console.log("Server is listening on http://localhost:3000");
 });
