@@ -10,6 +10,10 @@ import BestDealLabel from '../../Images/best_deals.png';
 var  Index = ()=> {
     var [items, setItems] = useState([]);
     var [loading, setLoading] = useState(true);
+    var [url, setUrl] = useState();
+    var [title, setTitle] = useState();
+    var [description, setDescription] = useState();
+    var [itemId, setItemId] = useState();
     var location = useLocation();
     
     useEffect(()=>{
@@ -21,6 +25,17 @@ var  Index = ()=> {
             .then(res => {
                 setItems(res);
                 setLoading(false);
+            });
+            fetch("/lastAd")
+            .then(res => res.json())
+            .then(res=>{
+                var previousAdData = (res.res);
+                if(previousAdData.length != 0){
+                    setUrl(previousAdData[0].videoLink);
+                    setTitle(previousAdData[0].title);
+                    setDescription(previousAdData[0].adDescription);
+                    setItemId(previousAdData[0].itemid);
+                }
             });
         }
         else if(pathArr[1] == "category"){
@@ -73,18 +88,18 @@ var  Index = ()=> {
                     {/* display ad */}
                     <div id="ad_div">
                         <div className="ad_video">
-                        <iframe width="100%" height="100%" src={"https://www.youtube.com/embed/FT3ODSg1GFE"+"?autoplay=1&mute=1&controls=0&modestbranding=1&showinfo=0&rel=0"}></iframe>
+                        <iframe width="100%" height="100%" src={url+"?autoplay=1&mute=1&controls=0&modestbranding=1&showinfo=0&rel=0"}></iframe>
                         </div>
                         <div className="ad_text">                
                             <div>
                                 <div className="h1 ad_title">
-                                    iPhone 14 Pro
+                                    {title}
                                 </div>
                                 <div className="ad_desc">
-                                    A magical new way to interact with iPhone. Groundbreaking safety features designed to save lives. An innovative 48MP camera for mind-blowing detail. All powered by the ultimate smartphone chip.
+                                    {description}
                                 </div>
                                 <div className="ad_go_btn_div">
-                                    <Button onClick={()=>{window.location.href = "/details/7"}} className="ad_go_btn">
+                                    <Button onClick={()=>{window.location.href = "/details/"+itemId}} className="ad_go_btn">
                                         Go &#8594;
                                     </Button>
                                 </div>

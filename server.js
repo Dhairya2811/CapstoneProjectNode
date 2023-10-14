@@ -5,6 +5,7 @@ var sqlite3 = require("sqlite3");
 var { open } = require("sqlite"); 
 var bcrypt = require("bcrypt");
 const cors = require("cors");
+const { param } = require("jquery");
 
 // var express = require("express");
 
@@ -149,6 +150,17 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
         );
     }
 });
+
+server.post("/userInfo", async (req, res)=>{
+    var name = req.body.username;
+    var sql = "SELECT * FROM users WHERE username = ?";
+    var params = [name];
+    (await db).get(sql, params)
+    .then(row=>{
+        res.json(row);
+    });
+});
+
 server.get("/index/search/:search_by", async(req, res)=>{
     var name = req.params.search_by;
     setReturn("index", name);
@@ -467,16 +479,6 @@ server.post("/starreview", async (req, res)=>{
             });
         }
     });
-
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
-    // 
 });
 
 server.get("/starreview", async (req, res)=>{
@@ -496,9 +498,38 @@ server.get("/aveReview", async (req, res)=>{
     var params = [itemid];
     (await db).all(sql, params)
     .then((row)=>{
-        console.log(row[0].average);
         res.json({"avg": row[0].average});
     });
+});
+
+server.post("/addAd", async (req, res)=>{
+    var data = req.body;
+    var url = data.url;
+    var title = data.title;
+    var description = data.description;
+    var itemid = data.itemid;
+    var sql = "SELECT * FROM ad";
+    (await db).all(sql)
+    .then(async row=>{
+        if(row.length == 0){
+            var sql2 = "INSERT INTO ad (videoLink, title, adDescription, itemid) VALUES (?, ?, ?, ?)";
+            var params2 = [url, title, description, itemid];
+            (await db).all(sql2, params2)
+            .then(err=>res.send("Ad added"));
+        }else if(row.length == 1){
+            var sql2 = "UPDATE ad set videoLink = ?, title = ?, adDescription = ?, itemid = ?";
+            var params2 = [url, title, description, itemid];
+            (await db).run(sql2, params2)
+            .then(err=>res.send("Ad updated"));
+        }
+    });
+});
+
+server.get("/lastAd", async (req, res)=>{
+    var sql = "SELECT * FROM ad WHERE rowid = ?";
+    var params = [1];
+    (await db).all(sql, params)
+    .then(row=>{res.json({"res":row})});
 });
 
 server.use(express.static('public')); // use this middleware before get method.
@@ -511,13 +542,9 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `CREATE TABLE rates (
-    //     itemid TEXT,
-    //     username TEXT,
-    //     rate INTEGER NOT NULL
-    // )`;
+    // var sql = "SELECT * FROM users";
     // (await db).all(sql).then(
-    //     (err, rows)=> console.log(err)
+    //     (err)=> console.log(err)
     // );
     console.log("Server is listening on http://localhost:3000");
 });
