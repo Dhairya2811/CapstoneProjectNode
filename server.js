@@ -514,11 +514,13 @@ server.post("/addAd", async (req, res)=>{
         if(row.length == 0){
             var sql2 = "INSERT INTO ad (videoLink, title, adDescription, itemid) VALUES (?, ?, ?, ?)";
             var params2 = [url, title, description, itemid];
-            (await db).run(sql2, params2, err=>res.send("Ad added"));
+            (await db).all(sql2, params2)
+            .then(err=>res.send("Ad added"));
         }else if(row.length == 1){
             var sql2 = "UPDATE ad set videoLink = ?, title = ?, adDescription = ?, itemid = ?";
             var params2 = [url, title, description, itemid];
-            (await db).run(sql2, params2, err=>res.send("Ad updated"));
+            (await db).run(sql2, params2)
+            .then(err=>res.send("Ad updated"));
         }
     });
 });

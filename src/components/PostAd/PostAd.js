@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Error404 from '../Error404/Error404';
 import AddUrlImage from './Image.json';
+import { useNavigate } from "react-router-dom";
 
 var PostAd = () => {
     const [admin, setAdmin] = useState(false);
@@ -8,6 +9,8 @@ var PostAd = () => {
     const[title, setTitle] = useState("");
     const[description, setDescription] = useState("");
     const[itemId, setItemId] = useState("");
+
+    var navigate = useNavigate();
 
     // Style  ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // desktop style ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -96,13 +99,11 @@ var PostAd = () => {
         .then(res=>{
             setAdmin(Boolean(res.admin));
         });
-        fetch("lastAd")
+        fetch("/lastAd")
         .then(res => res.json())
         .then(res=>{
             var previousAdData = (res.res);
-            console.log(previousAdData[0]);
             if(previousAdData.length != 0){
-                console.log(previousAdData[0].videoLink);
                 setUrl(previousAdData[0].videoLink);
                 setTitle(previousAdData[0].title);
                 setDescription(previousAdData[0].adDescription);
@@ -115,7 +116,9 @@ var PostAd = () => {
         var val = event.target.value;
         if(val != null){
             var arr = val.split("/");
-            var youtube_url = "https://www.youtube.com/embed/"+arr[(arr.length-1)];
+            var arr = arr[(arr.length-1)].split("?");
+            console.log(arr[0]);
+            var youtube_url = "https://www.youtube.com/embed/"+arr[0];
             setUrl(youtube_url);
         }else{
             setUrl("");
@@ -135,7 +138,9 @@ var PostAd = () => {
         })
         .then(res=> res.text())
         .then(res=>{
-            console.log(res);
+            if(res == "Ad added" || res == "Ad updated"){
+                navigate("/");
+            }
         });
     };
 
