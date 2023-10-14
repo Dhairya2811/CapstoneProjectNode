@@ -1,4 +1,5 @@
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+var webpack = require('webpack');
 
 module.exports = {
     entry: './src/index.js',
@@ -8,11 +9,17 @@ module.exports = {
       path: __dirname + '/public',
       filename: 'bundle.js'
     },
+    devServer: {
+      hot: true,
+    },
+    plugins: [
+      new webpack.HotModuleReplacementPlugin(),
+    ],
     module: {
       rules: [
         {
           test: /\.js$/,
-          loader: 'babel-loader'
+          loader: 'babel-loader',
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,

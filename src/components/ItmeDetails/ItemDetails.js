@@ -50,6 +50,7 @@ var ItemDetails = () => {
             for(var i = 1; i<=5; i++){
                 document.getElementById("star"+i).style.color="#E8F0F4";
             }
+            setRates(res.avg);
             for(var i = 1; i<=Math.floor(res.avg); i++){
                 document.getElementById("star"+i).style.color="#003A56";
             }

@@ -14,6 +14,7 @@ var Navigationbar = ()=>{
     const [show, setShow] = useState(false);
     const [categoryShow, setCategoryShow] = useState(false);
     const [searchShow, setSearchShow] = useState(false);
+    const [adminUser, setAdminUser] = useState(false);
     var site_logo = images.name_logo;
     var theme_color= "#003A56";
     var username = sessionStorage.getItem("username");
@@ -37,6 +38,21 @@ var Navigationbar = ()=>{
         else{
             setSearchShow(false);
             setCategoryShow(false);
+        }
+        if(username != null){
+            fetch("/userInfo", {
+                method:"post",
+                headers:{
+                    "Content-Type":"application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({username: username})
+            })
+            .then(res => res.json())
+            .then(res=>{
+                var admin = Boolean(res.admin);
+                setAdminUser(admin);
+            });
         }
     }, [location]);
 
@@ -95,6 +111,10 @@ var Navigationbar = ()=>{
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/" onClick={showChange}>Home</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/myItems" onClick={showChange}>My Item</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/addItem" onClick={showChange}>Add Item</Nav.Link>
+            {adminUser == true ? 
+            <>
+                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/postad" onClick={showChange}>Post Ad</Nav.Link>
+            </> : <></>}
             {/* <Nav.Link as={NavLink} to="#" onClick={logout}>Log Out</Nav.Link> */}
             {categoryShow == true ? 
             <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
