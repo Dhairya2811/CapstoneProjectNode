@@ -15,24 +15,36 @@ var ItemDetails = () => {
     var [comments, setComments] = useState([]);
     var [starReviewOpen, setStarReviewOpen] = useState(false);
     var [reviewLoading, setReviewLoading] = useState(true);
-    var [rates, setRates] = useState(0);
+    var [rates, setRates] = useState();
 
     useEffect(()=>{
-        if(itemLoaded == false){
-            setItemLoaded(true);
-            fetch(`/getItem/${id}`)
-            .then(res => res.json())
-            .then(res=>{
-                setItem(res)
-                setItemLoaded(false);
-            });
-        }
-        if(commentLoading == true){
-            getCommentData();
-        }
-        if(reviewLoading == true){
-            getReviewData();
-        }
+        const fetchData = async ()=>{
+            if(itemLoaded == false){
+                await setItemLoaded(true);
+                fetch(`/getItem/${id}`)
+                .then(res => res.json())
+                .then(async res=>{
+                    await setItem(res)
+                    await setItemLoaded(false);
+                });
+            }
+            if(commentLoading == true){
+                await getCommentData();
+            }
+            if(reviewLoading == true){
+                await getReviewData();
+                // setTimeout(()=>{
+                //     console.log(rates);
+                //     for(var i = 1; i<=5; i++){
+                //         document.getElementById("star"+i).style.color="#E8F0F4";
+                //     }
+                //     for(var i = 1; i<=Math.floor(res.avg); i++){
+                //         document.getElementById("star"+i).style.color="#003A56";
+                //     }
+                // }, 500);
+            }
+        };
+        fetchData();
     }, [location]);
     var getCommentData = ()=>{
         fetch("/getComments/"+id)
@@ -42,19 +54,31 @@ var ItemDetails = () => {
             setComments(res);
         });
     }
-    var getReviewData = ()=>{
-        setReviewLoading(false);
-        fetch("/aveReview/?itemid="+id)
-        .then(res=>res.json())
-        .then(res=>{
-            for(var i = 1; i<=5; i++){
-                document.getElementById("star"+i).style.color="#E8F0F4";
+    var getReviewData = async ()=>{
+        try{
+            const res = await fetch("/aveReview/?itemid="+id);
+            if(res.ok){
+                const data = await res.json();
+                setRates(data.avg);
+            }else{
+                throw new Error('Something went wrong');
             }
-            setRates(res.avg);
-            for(var i = 1; i<=Math.floor(res.avg); i++){
-                document.getElementById("star"+i).style.color="#003A56";
+        }catch(err){
+            console.error(err);
+        }finally{
+            setReviewLoading(false);
+        }       
+    };
+    const starReviews = ()=>{
+        let stars = [];
+        for (let i = 1; i <= 5; i++) {
+            if(i<=Math.floor(rates)){
+                stars.push(<span><FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10, color: "#003A56"}} id="star1" />{"\t"}</span>);
+            }else{
+                stars.push(<span><FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10, color: "#E8F0F4" }} id="star1" />{"\t"}</span>);
             }
-        });
+        }
+        return stars;
     };
     var addToCart = ()=>{
         let username = (sessionStorage.getItem("username"));
@@ -242,15 +266,11 @@ var ItemDetails = () => {
                         <small>{item.category}</small>
                         <div className="reviewDiv">
                             {/* create the review with the stars and rate out of 5. */}
-                            <button title="Give your review to this product." 
+                            
+                                {reviewLoading ? (<p>Loading...</p>) : (<button title="Give your review to this product." 
                                 style={{backgroundColor: "transparent", borderColor: "transparent", marginLeft: "-10"}}
-                                onClick={StarReviewClick}>
-                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star1" />&thinsp;
-                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star2" />&thinsp;
-                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star3" />&thinsp;
-                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star4" />&thinsp;
-                                <FaStar style={{ fontSize: 20, color: '#E8F0F4', stroke: '#003A56', strokeWidth: 10 }} id="star5" />
-                            </button><br/>
+                                onClick={StarReviewClick}>{starReviews().map(star=>star)}</button>)}
+                            <br/>
 {/* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
                                 {/* Add the component for the rates */}
                                 {sessionStorage.getItem("username") != null && starReviewOpen ? 
