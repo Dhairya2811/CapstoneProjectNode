@@ -60,6 +60,7 @@ var MyCart = ()=>{
             fetch(`/getCartItems/${sessionStorage.getItem("username")}/category/${pathArr[3]}`)
             .then(res => res.json())
             .then(res =>{
+                console.log(res);
                 setItems(res);
                 setLoading("false");
             });
