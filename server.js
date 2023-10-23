@@ -210,13 +210,13 @@ server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"]
     var name = req.params.name;
     var sql = "";
     if(name == undefined || name == "All"){
-        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category, i.deal, i.deal_title, i.dealPrice FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0`;
+        sql = `SELECT c.name as username, i.rowid, i.name, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category, i.deal, i.deal_title, i.dealPrice FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0`;
     }else if(name == "Lowtohigh"){
-        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price`;
+        sql = `SELECT c.name as username, i.rowid, i.name, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price`;
     }else if(name == "Hightolow"){
-        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price DESC`;
+        sql = `SELECT c.name as username, i.rowid, i.name, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 ORDER BY price DESC`;
     }else{
-        sql = `SELECT c.name, i.rowid, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 AND i.category = "${name}"`;
+        sql = `SELECT c.name as username, i.rowid, i.name, i.title, i.description, i.price, i.image, i.imageName, i.quantity, i.category FROM cart AS c INNER JOIN items AS i ON c.itemid = i.rowid WHERE c.name="${userName}" AND i.quantity > 0 AND i.category = "${name}"`;
     }
     (await db).all(sql)
     .then(row=>{
@@ -428,22 +428,28 @@ server.post("/updateItem", async (req, res)=>{
 
 server.post("/successfulPurchase", async (req, res)=>{
     var data = req.body;
+    console.log(data);
     var items = data.items;
     for(let i = 0; i<items.length; i++){
         var sql = `UPDATE items SET quantity = ? WHERE rowid=?`;
-        var params = [parseInt(items[1][i])-1, parseInt(items[0][i])];
+        var params = [parseInt(items[i].quantity)-1, parseInt(items[i].rowid)];
         (await db).all(sql, params)
         .then((err, rows)=>{
             if(err){console.log(err);}
         });
+        var sql2 = `DELETE FROM cart WHERE name = ? and itemID = ?`;
+        var params2= [data.userName, parseInt(items[i].rowid)];
+        (await db).all(sql2, params2)
+        .then((err, rows)=>{
+            if(err){console.log(err);}
+        });
+        var sql3 = "INSERT INTO purchaseHistory (itemtitle, price, buyername, sellername, date) VALUES (?, ?, ?, ?, ?)";
+        var params3 = [items[i].title, items[i].price, data.userName, items[i].name, data.date];
+        (await db).all(sql3, params3)
+        .then((err, rows)=>{
+            if(err){console.log(err);}
+        });
     }
-    var sql2 = `DELETE FROM cart WHERE name = ? and itemID = ?`;
-    var params2= [data.userName, parseInt(items[0])];
-    console.log(params2);
-    (await db).all(sql2, params2)
-    .then((err, rows)=>{
-        if(err){console.log(err);}
-    });
     res.send("purchased");
 });
 
@@ -532,17 +538,48 @@ server.get("/lastAd", async (req, res)=>{
     .then(row=>{res.json({"res":row})});
 });
 
+server.get("/higestSellReq", async(req, res)=>{
+    var sql = "SELECT rowid, sellername, SUM(price) as profit FROM purchaseHistory where date LIKE ? GROUP BY sellername Order by SUM(price) Desc";
+    var params = [`%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+    (await db).all(sql, params)
+    .then(async row=>{
+        var data = row;
+        for(let i = 0; i<data.length; i++){
+            var sql2 = "Select * from purchaseHistory Where sellername = ? and date LIKE ? order by price desc";
+            var params2 = [data[i].sellername, `%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+            (await db).all(sql2, params2)
+            .then(async row=>{
+                data[i]["details"]=row;
+                if(i+1 == data.length){
+                    var sql3 = "DELETE FROM purchaseHistory WHERE date NOT LIKE ?";
+                    var params3 = [`%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+                    (await db).run(sql3, params3);
+                    res.json(data);
+                }
+            });
+        }
+    });
+});
+
 server.use(express.static('public')); // use this middleware before get method.
 
 server.get("/:path", (req, res)=>{
-    // res.redirect("/");
     res.render('index');    
 
 });
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = "SELECT * FROM users";
+    // var sql = `CREATE TABLE purchaseHistory (
+    //     itemtitle TEXT,
+    //     price NUMERIC,
+    //     buyername TEXT,
+    //     sellername TEXT,
+    //     date TEXT,
+    //     FOREIGN KEY (itemtitle) REFERENCES items(title),
+    //     FOREIGN KEY (buyername) REFERENCES users(username),
+    //     FOREIGN KEY (sellername) REFERENCES users(username)
+    //   )`;
     // (await db).all(sql).then(
     //     (err)=> console.log(err)
     // );

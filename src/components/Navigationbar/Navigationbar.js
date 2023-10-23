@@ -100,7 +100,7 @@ var Navigationbar = ()=>{
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Fashion">Fashion</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Electronics">Electronics</NavDropdown.Item>
-                <NavDropdown.Divider style={{color: "white"}}/>
+                <NavDropdown.Divider style={{color: "#E8F0F4"}}/>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Lowtohigh">Price: Low to High</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Hightolow">Price: Hign to Low</NavDropdown.Item>
             </NavDropdown> : <></>}
@@ -114,6 +114,7 @@ var Navigationbar = ()=>{
             {adminUser == true ? 
             <>
                 <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/postad" onClick={showChange}>Post Ad</Nav.Link>
+                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/higestSell" onClick={showChange}>Higest Sell</Nav.Link>
             </> : <></>}
             {/* <Nav.Link as={NavLink} to="#" onClick={logout}>Log Out</Nav.Link> */}
             {categoryShow == true ? 
@@ -123,15 +124,15 @@ var Navigationbar = ()=>{
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Fashion">Fashion</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Electronics">Electronics</NavDropdown.Item>
-                <NavDropdown.Divider style={{color: "white"}}/>
+                <NavDropdown.Divider style={{color: "#E8F0F4"}}/>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Lowtohigh">Price: Low to High</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Hightolow">Price: Hign to Low</NavDropdown.Item>
             </NavDropdown> : <></>}
         </Nav>
         rightSide=<NavDropdown id="username_Dropdown" title={username} className="NavFonts">
-            <NavDropdown.Item className="username_Dropdown_items NavFonts"
-            id="logout" onClick={logout} >Log Out</NavDropdown.Item>
             <NavDropdown.Item className="username_Dropdown_items NavFonts" id="myCart" as={NavLink} to="/myCart">My Cart</NavDropdown.Item>
+            <NavDropdown.Divider style={{color: "#003A56"}}/>
+            <NavDropdown.Item className="username_Dropdown_items NavFonts" id="logout" onClick={logout} >Log Out</NavDropdown.Item>
         </NavDropdown>
     }
 
@@ -147,7 +148,7 @@ var Navigationbar = ()=>{
                     aria-labelledby={`offcanvasNavbarLabel-expand-true`}
                     style={{backgroundColor: theme_color}} onHide={showChange}
                     >
-                        <Offcanvas.Header closeButton closeVariant="white" className="navbar_offcanvas" >
+                        <Offcanvas.Header closeButton closeVariant="#E8F0F4" className="navbar_offcanvas" >
                         <Offcanvas.Title id={`offcanvasNavbarLabel-expand-true`}>
                             {/* add the my store logo */}
                             <Navbar.Brand as={NavLink} to="/"><img className = "navbar_image" src={site_logo} /></Navbar.Brand>

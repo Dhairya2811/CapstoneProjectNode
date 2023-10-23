@@ -36,7 +36,7 @@ var Payment = ()=>{
               });
             },
             onApprove: (data, actions) => {
-              return actions.order.capture().then(function(orderData) {
+                return actions.order.capture().then(function(orderData) {
                 // console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
                 // const transaction = orderData.purchase_units[0].payments.captures[0];
                 // alert(`The order has been placed successfully.\nThank you for shopping.`);
@@ -44,20 +44,18 @@ var Payment = ()=>{
                 var count = 0;
                 setTimeout(()=>{
                     var userName = sessionStorage.getItem("username");
-                    var itemIds = [];
-                    var itemQuantities = [];
-                    items.map(item=>{
-                        itemIds.push(item.rowid);
-                        itemQuantities.push(item.quantity);
-                    });
                     if(count == 0){
+                        var today = new Date();
+                        var month = today.toLocaleString('en-US', { month: 'short' });
+                        var year = today.getFullYear();
+                        var date = month + " "+year;
                         fetch("/successfulPurchase", {
                             method: "post",
                             headers:{
                                 "Content-Type":"application/json",
                             },
                             credentials:"include",
-                            body: JSON.stringify({userName: userName, items: [itemIds, itemQuantities]})
+                            body: JSON.stringify({userName: userName, items: items, date: date})
                         })
                         .then(res => res.text())
                         .then(res => {
@@ -67,7 +65,7 @@ var Payment = ()=>{
                                 navigate("/");
                             }
                         });
-                        console.log(count);
+
                         count++;
                     }
                 }, 2000);
@@ -83,6 +81,7 @@ var Payment = ()=>{
         sessionStorage.removeItem("items");
     }
     var getSubtotal = ()=>{
+        console.log(items);
         var subtotal = 0;
         items.map(item=>subtotal = subtotal+parseFloat(item.deal == 1 ? item.dealPrice : item.price));
         var tax = (subtotal*0.13).toFixed(2);
