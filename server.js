@@ -50,7 +50,9 @@ var pathArray = [
     "/category/:name",
     "/myCart/category/:name",
     "/myItems/category/:name",
-    "/search/:search_by"
+    "/search/:search_by",
+    "/higestSale",
+    "/UsersAndData"
  ];
 server.get(pathArray, (req, response)=>{
         response.render('index');    

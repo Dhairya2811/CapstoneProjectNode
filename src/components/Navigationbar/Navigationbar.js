@@ -114,7 +114,8 @@ var Navigationbar = ()=>{
             {adminUser == true ? 
             <>
                 <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/postad" onClick={showChange}>Post Ad</Nav.Link>
-                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/higestSell" onClick={showChange}>Higest Sell</Nav.Link>
+                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/higestSale" onClick={showChange}>Higest Sale</Nav.Link>
+                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/UsersAndData" onClick={showChange}>Users and Data</Nav.Link>
             </> : <></>}
             {/* <Nav.Link as={NavLink} to="#" onClick={logout}>Log Out</Nav.Link> */}
             {categoryShow == true ? 

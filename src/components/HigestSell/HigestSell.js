@@ -64,7 +64,7 @@ var HigestSell = () => {
         }else{
             if(admin){
                 return (<div style = {HigestSellContainer}>
-                    <h1>Highest Sells in the {new Date().toLocaleString('en-US', { month: 'long' })}.</h1>
+                    <h1>Highest Sales in the {new Date().toLocaleString('en-US', { month: 'long' })}.</h1>
                     <Table striped bordered hover>
                         <tbody>
                             {data.map((user) =>  (
