@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import Error404 from "../Error404/Error404";
+import User from "./User";
+import Data from "./Data";
 
 var UsersAndData = () => {
     const [page, setPage] = useState("user");
     const [firstTime, setFirstTime] = useState(0);
+    const [admin, setAdmin] = useState(false);
 
     // Style -------------------------------------------------------------------------------------------------------------------------------------------------------------
     // Desktop Style -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -12,6 +15,9 @@ var UsersAndData = () => {
         height: "70vh", 
         width:"100%", 
         color: "#003A56",
+    };
+    var UsersAndDataContainerBody = {
+        padding: "1em 10%"
     };
     var customRadioButton= {
         display: "grid",
@@ -45,6 +51,21 @@ var UsersAndData = () => {
   
     // Done with the style -----------------------------------------------------------------------------------------------------------------------------------------------
 
+    useEffect(()=>{
+        var user = sessionStorage.getItem("username");
+        fetch("/userInfo", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: user
+            })
+        })
+        .then(res => res.json())
+        .then(res=>{
+            setAdmin(Boolean(res.admin))
+        })
+    }, []);
+
     const handleChange = (event) => {
         var viewPage = event.target.value;
         console.log(viewPage);
@@ -57,58 +78,69 @@ var UsersAndData = () => {
     }
 
     const showComponent = ()=>{
-        return (
-            <div style={UsersAndDataContainer}>
-                <div style={customRadioButton}>
-                    <div key={"user"} style={optionContainer}>
-                        <Form.Check
-                            type="radio"
-                            id="user"
-                        >
-                            <Form.Check.Input 
-                                type="radio" 
-                                id="user" 
-                                value="user" 
-                                checked={page === "user"} 
-                                onChange={handleChange} 
-                                style={formCheckInput}
-                            />
-                            <Form.Check.Label style={formCheckLabel} onClick={styleTransform}><h3>User</h3></Form.Check.Label>
-                        </Form.Check>
-                        <div
-                            style={
-                                page === "user"
-                                ? { ...underline, ...underlineSelected}
-                                : underline
-                            }
-                        ></div>
-                    </div>
-                    <div key={"data"} style={optionContainer}>
-                        <Form.Check
-                            type="radio"
-                            id="data"
-                        >
-                            <Form.Check.Input 
-                                type="radio" 
-                                id="data" 
-                                value="data" 
-                                checked={page === "data"} 
-                                onChange={handleChange} 
-                                style={formCheckInput}
-                            />
-                            <Form.Check.Label style={formCheckLabel} onClick={styleTransform}><h3>Data</h3></Form.Check.Label>
-                        </Form.Check>
-                        <div
-                            style={
-                            page === "data"
-                                ? { ...underline, ...underlineSelected}
-                                : underline
-                            }
-                        ></div>
-                    </div>
-                </div>                
-            </div>
-        );
+        if(admin){
+            return (
+                <div style={UsersAndDataContainer}>
+                    <div style={customRadioButton}>
+                        <div key={"user"} style={optionContainer}>
+                            <Form.Check
+                                type="radio"
+                                id="user"
+                            >
+                                <Form.Check.Input 
+                                    type="radio" 
+                                    id="user" 
+                                    value="user" 
+                                    checked={page === "user"} 
+                                    onChange={handleChange} 
+                                    style={formCheckInput}
+                                />
+                                <Form.Check.Label style={formCheckLabel} onClick={styleTransform}><h3>User</h3></Form.Check.Label>
+                            </Form.Check>
+                            <div
+                                style={
+                                    page === "user"
+                                    ? { ...underline, ...underlineSelected}
+                                    : underline
+                                }
+                            ></div>
+                        </div>
+                        <div key={"data"} style={optionContainer}>
+                            <Form.Check
+                                type="radio"
+                                id="data"
+                            >
+                                <Form.Check.Input 
+                                    type="radio" 
+                                    id="data" 
+                                    value="data" 
+                                    checked={page === "data"} 
+                                    onChange={handleChange} 
+                                    style={formCheckInput}
+                                />
+                                <Form.Check.Label style={formCheckLabel} onClick={styleTransform}><h3>Data</h3></Form.Check.Label>
+                            </Form.Check>
+                            <div
+                                style={
+                                page === "data"
+                                    ? { ...underline, ...underlineSelected}
+                                    : underline
+                                }
+                            ></div>
+                        </div>
+                    </div> 
+                    <div style={UsersAndDataContainerBody}>
+                        {page == "data" ? <>
+                            <Data />
+                        </> : <>
+                            <User />
+                        </>}
+                    </div>              
+                </div>
+            );
+        }else{
+            return <Error404 linkAvailable={true} />
+        }
     };
     
     return(

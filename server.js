@@ -155,7 +155,7 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
 
 server.post("/userInfo", async (req, res)=>{
     var name = req.body.username;
-    var sql = "SELECT * FROM users WHERE username = ?";
+    var sql = "SELECT username, email, blocked, admin FROM users WHERE username = ?";
     var params = [name];
     (await db).get(sql, params)
     .then(row=>{

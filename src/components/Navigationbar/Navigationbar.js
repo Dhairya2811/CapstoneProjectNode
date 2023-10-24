@@ -94,7 +94,7 @@ var Navigationbar = ()=>{
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/register" onClick={showChange} >Register</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem"  as={NavLink} to="/signin" onClick={showChange}>Sign In</Nav.Link>
             {categoryShow == true ? 
-            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
+            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown} id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
                 <NavDropdown.Item  className="NavFonts NavbarLink Navitem" eventKey="All">All</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Toys">Toys</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
@@ -119,7 +119,7 @@ var Navigationbar = ()=>{
             </> : <></>}
             {/* <Nav.Link as={NavLink} to="#" onClick={logout}>Log Out</Nav.Link> */}
             {categoryShow == true ? 
-            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
+            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown} id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
                 <NavDropdown.Item  className="NavFonts NavbarLink Navitem" eventKey="All">All</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Toys">Toys</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
