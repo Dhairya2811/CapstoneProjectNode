@@ -8,6 +8,7 @@ var UsersAndData = () => {
     const [page, setPage] = useState("user");
     const [firstTime, setFirstTime] = useState(0);
     const [admin, setAdmin] = useState(false);
+    const [userData, setUserData] = useState();
 
     // Style -------------------------------------------------------------------------------------------------------------------------------------------------------------
     // Desktop Style -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -63,6 +64,7 @@ var UsersAndData = () => {
         .then(res => res.json())
         .then(res=>{
             setAdmin(Boolean(res.admin))
+            setUserData(res);
         })
     }, []);
 
@@ -133,7 +135,7 @@ var UsersAndData = () => {
                         {page == "data" ? <>
                             <Data />
                         </> : <>
-                            <User />
+                            <User user={userData}/>
                         </>}
                     </div>              
                 </div>

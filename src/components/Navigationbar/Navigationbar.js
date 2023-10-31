@@ -149,7 +149,7 @@ var Navigationbar = ()=>{
                     aria-labelledby={`offcanvasNavbarLabel-expand-true`}
                     style={{backgroundColor: theme_color}} onHide={showChange}
                     >
-                        <Offcanvas.Header closeButton closeVariant="#E8F0F4" className="navbar_offcanvas" >
+                        <Offcanvas.Header closeButton closeVariant="white" className="navbar_offcanvas" >
                         <Offcanvas.Title id={`offcanvasNavbarLabel-expand-true`}>
                             {/* add the my store logo */}
                             <Navbar.Brand as={NavLink} to="/"><img className = "navbar_image" src={site_logo} /></Navbar.Brand>

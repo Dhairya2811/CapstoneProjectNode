@@ -163,6 +163,21 @@ server.post("/userInfo", async (req, res)=>{
     });
 });
 
+server.post("/users", async (req, res)=>{
+    var data = req.body;
+    var username = data.user;
+    var sql = "SELECT username, email, blocked, admin FROM users WHERE username NOT LIKE ?";
+    var params = [username];
+    (await db).all(sql, params)
+    .then(row => {
+        res.json({res: row});
+    });
+});
+
+server.post("/userblockadmin", async (req, res)=>{
+    res.send("/userblockadmin request.");
+});
+
 server.get("/index/search/:search_by", async(req, res)=>{
     var name = req.params.search_by;
     setReturn("index", name);
