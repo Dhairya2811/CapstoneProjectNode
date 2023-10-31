@@ -174,8 +174,15 @@ server.post("/users", async (req, res)=>{
     });
 });
 
-server.post("/userblockadmin", async (req, res)=>{
-    res.send("/userblockadmin request.");
+server.put("/userblockadmin", async (req, res)=>{
+    const data = req.body;
+    const username = data.username;
+    const blocked = data.block;
+    const admin = data.admin;
+    var sql = "UPDATE users SET blocked = ?, admin = ? WHERE username = ?";
+    var params = [blocked, admin, username];
+    (await db).all(sql, params)
+    .then(row => res.send("USER INFO UPDATED"));
 });
 
 server.get("/index/search/:search_by", async(req, res)=>{
