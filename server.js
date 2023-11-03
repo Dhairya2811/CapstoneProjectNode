@@ -594,16 +594,7 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `CREATE TABLE purchaseHistory (
-    //     itemtitle TEXT,
-    //     price NUMERIC,
-    //     buyername TEXT,
-    //     sellername TEXT,
-    //     date TEXT,
-    //     FOREIGN KEY (itemtitle) REFERENCES items(title),
-    //     FOREIGN KEY (buyername) REFERENCES users(username),
-    //     FOREIGN KEY (sellername) REFERENCES users(username)
-    //   )`;
+    // var sql = `ALTER TABLE cart `;
     // (await db).all(sql).then(
     //     (err)=> console.log(err)
     // );
