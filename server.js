@@ -594,7 +594,7 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `ALTER TABLE cart `;
+    // var sql = `DELETE from users where username = "try1"`;
     // (await db).all(sql).then(
     //     (err)=> console.log(err)
     // );
