@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
  * {username: 'das', email: 'das@s.s', blocked: 0, admin: 0}
  */
 
-const User = ({user}) => {
+const User = () => {
+    const [username, setUserName] = useState(); 
     const [users, setUsers] = useState([]);
 
     // style for the each user in the list ***********************************************************************************************
@@ -42,7 +43,7 @@ const User = ({user}) => {
             headers:{
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({user: user.username})
+            body: JSON.stringify({user: JSON.parse(sessionStorage.getItem("user")).username})
         })
         .then(res => res.json())
         .then(res => {

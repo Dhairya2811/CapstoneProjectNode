@@ -166,8 +166,9 @@ server.post("/userInfo", async (req, res)=>{
 server.post("/users", async (req, res)=>{
     var data = req.body;
     var username = data.user;
-    var sql = "SELECT username, email, blocked, admin FROM users WHERE username NOT LIKE ?";
-    var params = [username];
+    console.log(data);
+    var sql = "SELECT username, email, blocked, admin FROM users WHERE username not in (?, ?)";
+    var params = [username, "Dhairya"];
     (await db).all(sql, params)
     .then(row => {
         res.json({res: row});
@@ -343,20 +344,22 @@ server.post("/signIn", async (req, response)=>{
     var data = req.body;
     var username = data.userName;
     var password = data.password;
-    var sql = "select username, password from users where username=?";
+    var sql = "select username, password, blocked, admin from users where username=?";
     var params = [username];
     (await db).all(sql, params)
-    .then(res=>{
-        if(res.length === 0){
+    .then(resp=>{
+        if(resp.length === 0){
             response.send("incorrect username");
         }else{
-            var user = res[0];
-            bcrypt.compare(password, user.password, (err, res)=>{
+            var username = resp[0].username;
+            var blocked = resp[0].blocked;
+            var admin = resp[0].admin;
+            bcrypt.compare(password, resp[0].password, (err, res)=>{
                 if(err){console.log(err);}
                 if(res){
-                    response.send(username);
+                    response.json({res:{username: username, blocked: blocked, admin: admin}});
                 }else{
-                    response.send("incorrect password")
+                    response.json({res: "incorrect password"});
                 }
             }); 
         }
@@ -568,19 +571,24 @@ server.get("/higestSellReq", async(req, res)=>{
     (await db).all(sql, params)
     .then(async row=>{
         var data = row;
-        for(let i = 0; i<data.length; i++){
-            var sql2 = "Select * from purchaseHistory Where sellername = ? and date LIKE ? order by price desc";
-            var params2 = [data[i].sellername, `%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
-            (await db).all(sql2, params2)
-            .then(async row=>{
-                data[i]["details"]=row;
-                if(i+1 == data.length){
-                    var sql3 = "DELETE FROM purchaseHistory WHERE date NOT LIKE ?";
-                    var params3 = [`%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
-                    (await db).run(sql3, params3);
-                    res.json(data);
-                }
-            });
+        if(data.length != 0){
+            for(let i = 0; i<data.length; i++){
+                var sql2 = "Select * from purchaseHistory Where sellername = ? and date LIKE ? order by price desc";
+                var params2 = [data[i].sellername, `%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+                (await db).all(sql2, params2)
+                .then(async row=>{
+                    data[i]["details"]=row;
+                    if(i+1 == data.length){
+                        var sql3 = "DELETE FROM purchaseHistory WHERE date NOT LIKE ?";
+                        var params3 = [`%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+                        (await db).run(sql3, params3);
+                        console.log(data);
+                        res.json(data);
+                    }
+                });
+            }
+        }else{
+            res.json(data);
         }
     });
 });

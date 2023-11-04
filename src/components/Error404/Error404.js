@@ -6,7 +6,7 @@ var Error404 = ({ linkAvailable, errorMessage }) => {
     var linkDiv = ()=>{
         if(linkAvailable == "true"){
             return(<>
-                <div>{errorMessage}</div>
+                <div style={{fontWeight: "bold", fontSize: "1.5em"}}>{errorMessage}</div>
             </>)
         }
     }

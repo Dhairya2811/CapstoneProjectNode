@@ -48,7 +48,7 @@ class Register extends Component{
                         }else{
                             console.log("inserted")
                             // this.errDisplay(false, "");
-                            sessionStorage.setItem("username", useName);
+                            sessionStorage.setItem("user", {username: useName, blocked: 0, admin: 0});
                             console.log(sessionStorage.getItem("username"));
                             window.location.href = "/";
                         }

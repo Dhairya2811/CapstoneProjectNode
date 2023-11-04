@@ -6,7 +6,8 @@ import LoadingSpinner from "../LoadingComponent/Loading";
 var DisplayPaymentItems = ({item})=>{
     var navigate = useNavigate();
     var removeClick = ()=>{
-        let username = (sessionStorage.getItem("username"));
+        let user = (JSON.parse(sessionStorage.getItem("user")));
+        let username = user.username;
         fetch("/addToCart", {
             method:"post",
             headers:{
@@ -45,19 +46,24 @@ var DisplayPaymentItems = ({item})=>{
 var MyCart = ()=>{
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState("true");
+    const [username, setUserName] = useState();
+    const [blocked, setBlocked] = useState();
     var navigate = useNavigate();
 
     useEffect(()=>{
         var pathArr = window.location.pathname.split("/");
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        setUserName(user == null ? null : user.username);
+        setBlocked(user == null ? null : user.blocked);
         if(loading == "true" && pathArr[1] == "myCart" && pathArr[2] == undefined){
-            fetch(`/getCartItems/${sessionStorage.getItem("username")}`)
+            fetch(`/getCartItems/${username}`)
             .then(res => res.json())
             .then(res =>{
                 setItems(res);
                 setLoading("false");
             });
         }else if(loading == "true" && pathArr[1] == "myCart" && pathArr[2] == "category"){
-            fetch(`/getCartItems/${sessionStorage.getItem("username")}/category/${pathArr[3]}`)
+            fetch(`/getCartItems/${username}/category/${pathArr[3]}`)
             .then(res => res.json())
             .then(res =>{
                 console.log(res);
@@ -119,8 +125,10 @@ var MyCart = ()=>{
         }
     }
     var renderComponent = ()=>{
-        if(sessionStorage.getItem("username") === null){
+        if(username === null){
             return <Error404 errorMessage="You are not signed in." linkAvailable="true"/>
+        }else if(blocked == 1){
+            return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable="true"/>;
         }
             return (<>
                 {loading == "true" ? <LoadingSpinner /> : <>{renderItems()}</>}

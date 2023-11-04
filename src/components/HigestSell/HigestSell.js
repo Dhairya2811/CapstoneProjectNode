@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Error404 from "../Error404/Error404";
 import LoadingSpinner from "../LoadingComponent/Loading";
-import { useLocation } from "react-router-dom";
 import { Table, Collapse, PageHeader } from "react-bootstrap";
 
 var HigestSell = () => {
-    const [admin, setAdmin] = useState(false);
+    const [admin, setAdmin] = useState(null);
+    const [blocked, setBlocked] = useState(null);
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState();
-    var location = useLocation();
 
     // Style ------------------------------------------------------------------------------------------------
     // Desktop Style ----------------------------------------------------------------------------------------
@@ -27,22 +26,13 @@ var HigestSell = () => {
     // Style Completed --------------------------------------------------------------------------------------
     useEffect( ()=>{
         setLoading(true);
-        fetch("/userInfo", {
-            method:"post",
-            headers:{
-                "Content-Type":"application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({username: sessionStorage.getItem("username")})
-        })
-        .then(res => res.json())
-        .then(res=>{
-            setAdmin(Boolean(res.admin));
-        });
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        setAdmin(user.admin);
+        setBlocked(user.blocked);
 
         fetch("/higestSellReq")
         .then(res => res.json())
-        .then(async res => {
+        .then(res => {
             setLoading(false);
             setData(res);
         });
@@ -60,9 +50,16 @@ var HigestSell = () => {
 
     const showContent = ()=>{
         if(loading){
-            <LoadingSpinner />
+            return <LoadingSpinner />
         }else{
-            if(admin){
+            if(blocked == 1){
+                return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable="true"/>;
+            }else if(admin){
+                if(data.length == 0){
+                    return <div style = {HigestSellContainer}>
+                        <h1>There is no sell in the month of {new Date().toLocaleString('en-US', { month: 'long' })}</h1>
+                    </div>
+                }
                 return (<div style = {HigestSellContainer}>
                     <h1>Highest Sales in the {new Date().toLocaleString('en-US', { month: 'long' })}.</h1>
                     <Table striped bordered hover>
@@ -106,11 +103,5 @@ var HigestSell = () => {
         {showContent()}
     </>);
 }
-
-// const HigestSell = ()=>{
-//     return <>
-//         HigestSell
-//     </>
-// };
 
 export default HigestSell;

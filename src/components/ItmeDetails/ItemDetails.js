@@ -16,8 +16,15 @@ var ItemDetails = () => {
     var [starReviewOpen, setStarReviewOpen] = useState(false);
     var [reviewLoading, setReviewLoading] = useState(true);
     var [rates, setRates] = useState();
+    const [username, setUserName] = useState(null);
+    const [blocked, setBlocked] = useState(null);
+    
 
     useEffect(()=>{
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        console.log(user);
+        setUserName(user.username);
+        setBlocked(user.blocked);
         const fetchData = async ()=>{
             if(itemLoaded == false){
                 await setItemLoaded(true);
@@ -33,15 +40,6 @@ var ItemDetails = () => {
             }
             if(reviewLoading == true){
                 await getReviewData();
-                // setTimeout(()=>{
-                //     console.log(rates);
-                //     for(var i = 1; i<=5; i++){
-                //         document.getElementById("star"+i).style.color="#E8F0F4";
-                //     }
-                //     for(var i = 1; i<=Math.floor(res.avg); i++){
-                //         document.getElementById("star"+i).style.color="#003A56";
-                //     }
-                // }, 500);
             }
         };
         fetchData();
@@ -81,7 +79,6 @@ var ItemDetails = () => {
         return stars;
     };
     var addToCart = ()=>{
-        let username = (sessionStorage.getItem("username"));
         let itemID = id;
         fetch("/addToCart", {
             method:"post",
@@ -116,7 +113,7 @@ var ItemDetails = () => {
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    username: sessionStorage.getItem("username"),
+                    username: username,
                     datetime: currentDate,
                     comment: text,
                     itemid: id
@@ -142,14 +139,17 @@ var ItemDetails = () => {
     }
 
     var addComment = ()=>{
-        return <div className="addCommentDiv">
-            <div className="addCommentTextarea">
-                <textarea className="form-control" id="commentText" style={{borderRadius: "10px 0px 0px 10px"}} rows="4" placeholder="Add comment for this item..."></textarea>
+        if(blocked != 1){
+            return <div className="addCommentDiv">
+                <div className="addCommentTextarea">
+                    <textarea className="form-control" id="commentText" style={{borderRadius: "10px 0px 0px 10px"}} rows="4" placeholder="Add comment for this item..."></textarea>
+                </div>
+                <div className="submitButton">
+                    <button className="submitCommentBtn" style={{backgroundColor: "#003A56"}} onClick={submitComment.bind(this)}><i className='material-icons' style={{color: "white"}}>send</i></button>
+                </div>
             </div>
-            <div className="submitButton">
-                <button className="submitCommentBtn" style={{backgroundColor: "#003A56"}} onClick={submitComment.bind(this)}><i className='material-icons' style={{color: "white"}}>send</i></button>
-            </div>
-        </div>
+        }
+        return <></>
     }
 
     var checkout = ()=>{
@@ -159,7 +159,7 @@ var ItemDetails = () => {
   
 
     var addToCartBtnDisplay = ()=>{
-        let username = (sessionStorage.getItem("username"));
+        let username = username;
         if(username !== null){
             if(item.name == username){
                 return <div style={{width: "100%"}}>
@@ -169,30 +169,32 @@ var ItemDetails = () => {
             }
             else if(item.inCart !== true){
                 return <div style={{width: "100%"}}>
-                    <input className="btn btn-primary cartBtn" style={{backgroundColor: "#003A56"}} type="button" value="Add to cart" onClick={addToCart} />
-                    <input className="btn btn-success cartBtn" type="button" value="Checkout" onClick={checkout} />
+                    <input className="btn btn-primary cartBtn" style={{backgroundColor: "#003A56"}} type="button" value="Add to cart" onClick={addToCart} disabled={blocked == 1} />
+                    <input className="btn btn-success cartBtn" type="button" value="Checkout" onClick={checkout}  disabled={blocked == 1} />
                 </div>;
             }else{
                 return <div style={{width: "100%"}}>
-                    <input className="btn btn-danger cartBtn" type="button" value="Remove from cart" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} onClick={addToCart} />
-                    <input className="btn btn-success cartBtn" type="button" value="Checlout" onClick={checkout} />
+                    <input className="btn btn-danger cartBtn" type="button" value="Remove from cart" style={{backgroundColor: "#a90119", borderColor: "#a90119"}} onClick={addToCart} disabled={blocked == 1}/>
+                    <input className="btn btn-success cartBtn" type="button" value="Checkout" onClick={checkout}  disabled={blocked == 1}/>
                 </div>;
             }
         }
     }
     function flagComment(comment){
-        fetch("/flagComment", {
-            method: "post",
-            headers:{
-                "Content-Type":"application/json",
-            },
-            credentials:"include",
-            body: JSON.stringify({rowid: comment.rowid, flag: comment.flag})
-        })
-        .then(res => res.text())
-        .then(res=>{if(res == "flag_change"){
-            getCommentData();
-        }})
+        if(blocked != 1){
+            fetch("/flagComment", {
+                method: "post",
+                headers:{
+                    "Content-Type":"application/json",
+                },
+                credentials:"include",
+                body: JSON.stringify({rowid: comment.rowid, flag: comment.flag})
+            })
+            .then(res => res.text())
+            .then(res=>{if(res == "flag_change"){
+                getCommentData();
+            }})
+        }
     }
     function displayComment(comment){
         return (<div>
@@ -269,11 +271,11 @@ var ItemDetails = () => {
                             
                                 {reviewLoading ? (<p>Loading...</p>) : (<button title="Give your review to this product." 
                                 style={{backgroundColor: "transparent", borderColor: "transparent", marginLeft: "-10"}}
-                                onClick={StarReviewClick}>{starReviews().map(star=>star)}</button>)}
+                                onClick={StarReviewClick} disabled={blocked == 1}>{starReviews().map(star=>star)}</button>)}
                             <br/>
 {/* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
                                 {/* Add the component for the rates */}
-                                {sessionStorage.getItem("username") != null && starReviewOpen ? 
+                                {username != null && starReviewOpen ? 
                                 <>
                                     <Overlay starReviewOpen={starReviewOpen} />
                                     <StarRating starReviewOpen={starReviewOpen} closeClick={closeClick} itemid={id}/>
@@ -290,11 +292,11 @@ var ItemDetails = () => {
                     </div>
                 </div> 
                 <br/>
-                {sessionStorage.getItem("username") != null || comments.length != 0 ? <div className="commentsDiv" id="commentsDiv">
+                {username != null || comments.length != 0 ? <div className="commentsDiv" id="commentsDiv">
                     <span className="commentHeading">
                         <h3>Comment</h3>
                     </span>
-                    {sessionStorage.getItem("username") != null ? addComment() :
+                    {username != null ? addComment() :
                     <></>}
                     {getComment}
                 </div> : <></>}

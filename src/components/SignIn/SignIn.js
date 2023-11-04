@@ -35,8 +35,9 @@ class SignIn extends Component{
                 credentials:"include",
                 body: JSON.stringify({userName: userName, password: password})
             })
-            .then(res => res.text())
+            .then(res => res.json())
             .then(res=>{
+                var res = res.res;
                 if(res == "incorrect username"){
                     let errdiv = document.getElementById("err");
                     errdiv.style.display = "block";
@@ -46,10 +47,9 @@ class SignIn extends Component{
                     errdiv.style.display = "block";
                     errdiv.innerHTML = "Incorrect Password.";
                 }else{
-                    console.log("correct");
                     let errdiv = document.getElementById("err");
                     errdiv.style.display = "none";
-                    sessionStorage.setItem("username", res);
+                    sessionStorage.setItem("user", JSON.stringify({username: res.username, blocked: res.blocked, admin: res.admin}));
                     window.location.href = "/"
                 }
             });

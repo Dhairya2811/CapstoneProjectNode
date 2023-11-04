@@ -8,7 +8,8 @@ var UsersAndData = () => {
     const [page, setPage] = useState("user");
     const [firstTime, setFirstTime] = useState(0);
     const [admin, setAdmin] = useState(false);
-    const [userData, setUserData] = useState();
+    const [username, setUserName] = useState(null);
+    const [blocked, setBlocked] = useState(null);
 
     // Style -------------------------------------------------------------------------------------------------------------------------------------------------------------
     // Desktop Style -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,24 +54,14 @@ var UsersAndData = () => {
     // Done with the style -----------------------------------------------------------------------------------------------------------------------------------------------
 
     useEffect(()=>{
-        var user = sessionStorage.getItem("username");
-        fetch("/userInfo", {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                username: user
-            })
-        })
-        .then(res => res.json())
-        .then(res=>{
-            setAdmin(Boolean(res.admin))
-            setUserData(res);
-        })
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        setUserName(user.username);
+        setBlocked(user.blocked);
+        setAdmin(user.admin);
     }, []);
 
     const handleChange = (event) => {
         var viewPage = event.target.value;
-        console.log(viewPage);
         setPage(viewPage);
     };
 
@@ -80,7 +71,7 @@ var UsersAndData = () => {
     }
 
     const showComponent = ()=>{
-        if(admin){
+        if(admin == 1 && blocked == 0){
             return (
                 <div style={UsersAndDataContainer}>
                     <div style={customRadioButton}>
@@ -135,11 +126,13 @@ var UsersAndData = () => {
                         {page == "data" ? <>
                             <Data />
                         </> : <>
-                            <User user={userData}/>
+                            <User/>
                         </>}
                     </div>              
                 </div>
             );
+        }else if (blocked == 1){
+            return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable="true"/>;
         }else{
             return <Error404 linkAvailable={true} />
         }
