@@ -248,15 +248,18 @@ server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"]
         res.send(row);
     });
 });
-server.get("/getItem/:id", async (req, res)=>{
+server.get("/getItem/:id/:username", async (req, res)=>{
     var itemId = req.params.id;
+    var username = req.params.username;
     var sql = `select rowid, * from items WHERE rowid=${itemId}`;
     (await db).get(sql)
     .then(
         async (rows)=>{
             // rows["incart"] = true;
             if(rows !== undefined){
-                (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
+                var sql2 = `SELECT * FROM cart WHERE itemID = ? and name = ?`;
+                var params2 = [itemId, username];
+                (await server.locals.db).all(sql2, params2)
                 .then(internalrows =>{
                     var inCart = false;
                     if ((internalrows).length !== 0){
@@ -349,7 +352,8 @@ server.post("/signIn", async (req, response)=>{
     (await db).all(sql, params)
     .then(resp=>{
         if(resp.length === 0){
-            response.send("incorrect username");
+            console.log("incorrect username");
+            response.json({res: "incorrect username"});
         }else{
             var username = resp[0].username;
             var blocked = resp[0].blocked;
@@ -602,7 +606,9 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `INSERT INTO rates VALUES (31,	"das5",	5);`;
+    // var sql = `INSERT INTO "main"."cart"
+    // ("name", "itemID")
+    // VALUES ('das5', 33);`;
     // (await db).all(sql)
     // .then(res => {
     //     console.log(res);

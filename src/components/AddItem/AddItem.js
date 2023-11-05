@@ -306,7 +306,6 @@ var dealValueAdder = (deal_title)=>{
 
     useEffect(()=>{
         var urlArr = (window.location.pathname.split("/"));
-        var user = sessionStorage.getItem("user");
         var user = JSON.parse(sessionStorage.getItem("user"));
         console.log(user);
         setUserName(user == null ? null : user.username);
@@ -315,7 +314,7 @@ var dealValueAdder = (deal_title)=>{
             setCount(1);            
             setLoading(true);
             var id = urlArr[urlArr.length -1];
-            fetch(`/getItem/${id}`)
+            fetch(`/getItem/${id}/${user.username}`)
             .then(res => res.json())
             .then(res => {   
                 setData(res); 

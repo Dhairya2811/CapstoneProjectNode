@@ -38,6 +38,7 @@ class SignIn extends Component{
             .then(res => res.json())
             .then(res=>{
                 var res = res.res;
+                console.log(res);
                 if(res == "incorrect username"){
                     let errdiv = document.getElementById("err");
                     errdiv.style.display = "block";

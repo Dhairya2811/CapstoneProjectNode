@@ -27,7 +27,7 @@ var ItemDetails = () => {
         const fetchData = async ()=>{
             if(itemLoaded == false){
                 await setItemLoaded(true);
-                fetch(`/getItem/${id}`)
+                fetch(`/getItem/${id}/${user.username}`)
                 .then(res => res.json())
                 .then(async res=>{
                     await setItem(res)
@@ -258,7 +258,7 @@ var ItemDetails = () => {
             return <div className="displayItemInfo">
                 <div className="displayInfodiv">
                     <div className="itemImageDisplay">
-                        <img style={{height: "100%", maxHeight: "450px", width: "auto"}} className="itemImage" src={item.image} />
+                        <img style={{height: "auto", maxHeight: "450px", width: "70%", maxWidth: "450px"}} className="itemImage" src={item.image} />
                     </div>
                     <div className="itemInfoDisplay" >
                         <h1 className="title">{item.title}</h1>
