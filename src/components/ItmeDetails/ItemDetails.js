@@ -22,7 +22,6 @@ var ItemDetails = () => {
 
     useEffect(()=>{
         var user = JSON.parse(sessionStorage.getItem("user"));
-        console.log(user);
         setUserName(user.username);
         setBlocked(user.blocked);
         const fetchData = async ()=>{
@@ -99,7 +98,6 @@ var ItemDetails = () => {
     var submitComment = ()=>{
         var text = document.getElementById("commentText").value;
         if(text.length == 0){
-            console.log("Comment empty");
         }else{
             var date = new Date();
             var day = date.getDate();
@@ -159,7 +157,6 @@ var ItemDetails = () => {
   
 
     var addToCartBtnDisplay = ()=>{
-        let username = username;
         if(username !== null){
             if(item.name == username){
                 return <div style={{width: "100%"}}>
@@ -261,7 +258,7 @@ var ItemDetails = () => {
             return <div className="displayItemInfo">
                 <div className="displayInfodiv">
                     <div className="itemImageDisplay">
-                        <img className="itemImage" src={item.image} />
+                        <img style={{height: "100%", maxHeight: "450px", width: "auto"}} className="itemImage" src={item.image} />
                     </div>
                     <div className="itemInfoDisplay" >
                         <h1 className="title">{item.title}</h1>

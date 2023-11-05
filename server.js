@@ -602,9 +602,11 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `DELETE from users where username = "try1"`;
-    // (await db).all(sql).then(
-    //     (err)=> console.log(err)
-    // );
+    // var sql = `INSERT INTO rates VALUES (31,	"das5",	5);`;
+    // (await db).all(sql)
+    // .then(res => {
+    //     console.log(res);
+    // });
+
     console.log("Server is listening on http://localhost:3000");
 });
