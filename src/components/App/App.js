@@ -19,7 +19,7 @@ class App extends React.Component{
         return (
             <div className="App">
                 <Navigationbar />
-                <div className="body">
+                <div className="body" style={{height: "fit-content"}}>
                     <Routes>
                             <Route exact path="/" element={<Index />}/>
                             <Route path="/category/:name" element={<Index />} />
@@ -37,6 +37,7 @@ class App extends React.Component{
                             <Route path="/postad" element={<PostAd />}/>
                             <Route path="/higestSale" element={<HigestSell />}/>
                             <Route path="/usersAndData" element={<UsersAndData />} />
+                            <Route path="/usersAndData/search/:search_by" element={<UsersAndData />} />
                             <Route path="*" element={<Error404 />}/>
                     </Routes>
                 </div>

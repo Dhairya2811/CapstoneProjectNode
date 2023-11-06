@@ -51,6 +51,7 @@ var pathArray = [
     "/myCart/category/:name",
     "/myItems/category/:name",
     "/search/:search_by",
+    "/UsersAndData/search/:query",
     "/higestSale",
     "/UsersAndData"
  ];
@@ -594,6 +595,39 @@ server.get("/higestSellReq", async(req, res)=>{
         }else{
             res.json(data);
         }
+    });
+});
+
+server.get("/UsersAndData/adminSearch/:query", async(req, res)=>{
+    var query = req.params.query;
+    var userSql = "Select username, email, blocked, admin from users where username = ?";
+    var userParams = [query];
+    await (await db).all(userSql, userParams)
+    .then(async resp => {
+        if(resp.length > 0){
+            res.json({"resp": resp, "page": "user"});
+        }else{
+            var itemsSql = "Select rowid, * from items where title like ? OR category like ? OR description like ?;";
+            var itemsParams = [`%${query}%`, `%${query}%`, `%${query}%`];
+            (await db).all(itemsSql, itemsParams)
+            .then(resp => {
+                if(resp.length > 0){
+                    res.json({"resp": resp, "page": "data"});
+                }else{
+                    res.json({"resp": "No User or Data found with search query of "+query});
+                }
+            });
+        }
+    });
+});
+
+server.get("/getAllItems", async (req, res)=>{
+    var page = parseInt(req.query.page);
+    var sql = `SELECT rowid, * FROM items ORDER BY rowid DESC LIMIT ?, 10;`;
+    var params = [parseInt(page)*10];
+    (await db).all(sql, params)
+    .then(data => {
+        res.json({"nextPage": page+1, "response": data});
     });
 });
 

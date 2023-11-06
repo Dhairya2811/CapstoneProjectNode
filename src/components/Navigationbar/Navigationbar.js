@@ -32,9 +32,11 @@ var Navigationbar = ()=>{
         setUserName(user != null ? user.username : null);
         setBlocked(user != null ? user.blocked : null);
         setAdmin(user != null ? user.admin : null);
-
         if(path == "/" || path == "/myItems" || path == "/myCart"){
             setCategoryShow(true);
+            setSearchShow(true);
+        }else if(pathArr[1] == "UsersAndData"){
+            setCategoryShow(false);
             setSearchShow(true);
         }else if(pathArr[1] == "category"){
             setSearchShow(false);
