@@ -19,7 +19,7 @@ class App extends React.Component{
         return (
             <div className="App">
                 <Navigationbar />
-                <div className="body" style={{height: "fit-content"}}>
+                <div className="body">
                     <Routes>
                             <Route exact path="/" element={<Index />}/>
                             <Route path="/category/:name" element={<Index />} />

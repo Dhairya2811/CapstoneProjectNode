@@ -623,6 +623,7 @@ server.get("/UsersAndData/adminSearch/:query", async(req, res)=>{
 
 server.get("/getAllItems", async (req, res)=>{
     var page = parseInt(req.query.page);
+    console.log(`/getAllItems get called. \n page no.: ${page}`)
     var sql = `SELECT rowid, * FROM items ORDER BY rowid DESC LIMIT ?, 10;`;
     var params = [parseInt(page)*10];
     (await db).all(sql, params)

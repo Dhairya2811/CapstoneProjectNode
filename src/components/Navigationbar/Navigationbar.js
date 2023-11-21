@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import images from './images.json';
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 
 
