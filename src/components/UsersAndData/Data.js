@@ -148,7 +148,7 @@ const Data = ({ data }) => {
         var commenterName = {
             marginTop: "1em",
             display: "grid",
-            gridTemplateColumns: "45% 45% 10%",
+            gridTemplateColumns: "40% 40% 10% 10%",
             color: "rgb(56, 56, 56)",
         };
         var commentText = {
@@ -216,6 +216,23 @@ const Data = ({ data }) => {
             showCommentsVar[rowid] = !showCommentsVar[rowid];
             await setShowComments(showCommentsVar);
         };   
+
+        var deleteCommentClick = (commentID)=>{
+            fetch("/deleteComment", {                
+                method: "post",
+                headers:{
+                    "Content-Type":"application/json",
+                },
+                credentials:"include",
+                body: JSON.stringify({commentid: commentID})
+            })
+            .then(res => res.text())
+            .then(res => {
+                if(res == "COMMENT DELETED"){
+                    window.location.reload();
+                }
+            });
+        }
         
         var displayComment = (comment) => {
             return (<div>
@@ -224,6 +241,7 @@ const Data = ({ data }) => {
                             <h4>{comment.name}</h4>
                             <small style={small}>{comment.datetime} </small>
                             {comment.flag == "0" ? <div style={{...flagBtn, color: "gray"}} onClick={()=> flagComment(comment)} >&#9873;</div> : <div style={{...flagBtn, color: "red"}} onClick={()=> flagComment(comment)} >&#9873;</div>}
+                            <button onClick={()=>deleteCommentClick(comment.rowid)} className="btn btn-danger">Delete</button>
                         </div>
                     </div>
                     <div style={commentText}>

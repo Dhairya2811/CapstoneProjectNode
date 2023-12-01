@@ -206,6 +206,16 @@ server.get("/getComments/:itemid", async(req, res)=>{
     (await db).all(sql).then(data=>res.send(data));
 });
 
+server.post("/deleteComment", async (req, res) => {
+    var commentid = req.body.commentid;
+    var sql = 'DELETE FROM comment WHERE rowid=?';
+    var params = [commentid];
+    (await db).run(sql, params)
+    .then(()=>
+        res.send('COMMENT DELETED')
+    );
+});
+
 server.get(["/getMyItems/:username", "/getMyItems/:username/category/:name"], async(req, res)=>{
     var username = req.params.username;
     var name = req.params.name;
