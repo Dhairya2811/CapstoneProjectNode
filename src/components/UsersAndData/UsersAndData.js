@@ -1,0 +1,169 @@
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
+import Error404 from "../Error404/Error404";
+import LoadingSpinner from "../LoadingComponent/Loading";
+import User from "./User";
+import Data from "./Data";
+
+var UsersAndData = () => {
+    const [page, setPage] = useState("user");
+    const [firstTime, setFirstTime] = useState(0);
+    const [admin, setAdmin] = useState(false);
+    const [username, setUserName] = useState(null);
+    const [blocked, setBlocked] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState([]);
+
+    // Style -------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // Desktop Style -----------------------------------------------------------------------------------------------------------------------------------------------------
+    var UsersAndDataContainer = {
+        minHeight: "70vh", 
+        width:"100%", 
+        color: "#003A56",
+    };
+    var UsersAndDataContainerBody = {
+        padding: "1em 10%"
+    };
+    var customRadioButton= {
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        textAlign: "center",
+    };
+    var optionContainer= {
+        position: "relative",
+    };
+    var underline= {
+        position: "absolute",
+        bottom: -5,
+        left: 0,
+        right: 0,
+        height: 5,
+        backgroundColor: "transparent",
+        transform:  `translateX(${firstTime % 2 == 0 ? "-100" : "100"}%)` ,
+        transition: "transform 0.3s ease-in-out",
+        borderRadius: "3px"
+    };
+    var underlineSelected= {
+        backgroundColor: "#003A56",
+        transform: "translateX(0%)"
+    };
+    var formCheckInput= {
+        display: "none",
+    };
+    var formCheckLabel= {
+        cursor: "pointer",
+    };
+  
+    // Done with the style -----------------------------------------------------------------------------------------------------------------------------------------------
+
+    useEffect(()=>{
+        setLoading(true);
+        var pathArr = location.pathname.split("/");
+        if (pathArr[2] == "search"){
+            fetch(`/UsersAndData/adminSearch/${pathArr[3]}`)
+            .then(res => res.json())
+            .then(res => {
+                setPage(res.page);
+                setData(res.resp);
+                setLoading(false);
+            });
+        }else{
+            setLoading(false);
+        }
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        setUserName(user.username);
+        setBlocked(user.blocked);
+        setAdmin(user.admin);
+    }, []);
+
+    const handleChange = (event) => {
+        var viewPage = event.target.value;
+        setPage(viewPage);
+    };
+
+    const styleTransform = ()=>{
+        var val = firstTime + 1;
+        setFirstTime(val);
+    }
+
+    const showComponent = ()=>{
+        if(!loading){
+            if(admin == 1 && blocked == 0){
+                return (
+                    <div style={UsersAndDataContainer}>
+                        <div style={customRadioButton}>
+                            <div key={"user"} style={optionContainer}>
+                                <Form.Check
+                                    type="radio"
+                                    id="user"
+                                >
+                                    <Form.Check.Input 
+                                        type="radio" 
+                                        id="user" 
+                                        value="user" 
+                                        checked={page === "user"} 
+                                        onChange={handleChange} 
+                                        style={formCheckInput}
+                                    />
+                                    <Form.Check.Label style={formCheckLabel} onClick={styleTransform}><h3>User</h3></Form.Check.Label>
+                                </Form.Check>
+                                <div
+                                    style={
+                                        page === "user"
+                                        ? { ...underline, ...underlineSelected}
+                                        : underline
+                                    }
+                                ></div>
+                            </div>
+                            <div key={"data"} style={optionContainer}>
+                                <Form.Check
+                                    type="radio"
+                                    id="data"
+                                >
+                                    <Form.Check.Input 
+                                        type="radio" 
+                                        id="data" 
+                                        value="data" 
+                                        checked={page === "data"} 
+                                        onChange={handleChange} 
+                                        style={formCheckInput}
+                                    />
+                                    <Form.Check.Label style={formCheckLabel} onClick={styleTransform}><h3>Data</h3></Form.Check.Label>
+                                </Form.Check>
+                                <div
+                                    style={
+                                    page === "data"
+                                        ? { ...underline, ...underlineSelected}
+                                        : underline
+                                    }
+                                ></div>
+                            </div>
+                        </div> 
+                        <div style={UsersAndDataContainerBody}>
+                            {page == "data" ? <>
+                                <Data data={data}/>
+                            </> : <>
+                                <User data={data}/>
+                            </>}
+                        </div>              
+                    </div>
+                );
+            }else if (blocked == 1){
+                return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable="true"/>;
+            }else{
+                return <Error404 linkAvailable={true} />
+            }
+        }else{
+            return <LoadingSpinner />;
+        }
+    };
+    
+    return(
+        <>
+            {showComponent()}
+        </>
+    );
+}
+
+export default UsersAndData;
+

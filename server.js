@@ -50,7 +50,10 @@ var pathArray = [
     "/category/:name",
     "/myCart/category/:name",
     "/myItems/category/:name",
-    "/search/:search_by"
+    "/search/:search_by",
+    "/UsersAndData/search/:query",
+    "/higestSale",
+    "/UsersAndData"
  ];
 server.get(pathArray, (req, response)=>{
         response.render('index');    
@@ -153,12 +156,35 @@ server.get(["/index", "/index/category/:name"], async (req, response)=>{
 
 server.post("/userInfo", async (req, res)=>{
     var name = req.body.username;
-    var sql = "SELECT * FROM users WHERE username = ?";
+    var sql = "SELECT username, email, blocked, admin FROM users WHERE username = ?";
     var params = [name];
     (await db).get(sql, params)
     .then(row=>{
         res.json(row);
     });
+});
+
+server.post("/users", async (req, res)=>{
+    var data = req.body;
+    var username = data.user;
+    console.log(data);
+    var sql = "SELECT username, email, blocked, admin FROM users WHERE username not in (?, ?)";
+    var params = [username, "Dhairya"];
+    (await db).all(sql, params)
+    .then(row => {
+        res.json({res: row});
+    });
+});
+
+server.put("/userblockadmin", async (req, res)=>{
+    const data = req.body;
+    const username = data.username;
+    const blocked = data.block;
+    const admin = data.admin;
+    var sql = "UPDATE users SET blocked = ?, admin = ? WHERE username = ?";
+    var params = [blocked, admin, username];
+    (await db).all(sql, params)
+    .then(row => res.send("USER INFO UPDATED"));
 });
 
 server.get("/index/search/:search_by", async(req, res)=>{
@@ -178,6 +204,16 @@ server.get("/getComments/:itemid", async(req, res)=>{
     var itemid = req.params.itemid;
     var sql = `SELECT rowid, * FROM comment WHERE itemid=${itemid}`;
     (await db).all(sql).then(data=>res.send(data));
+});
+
+server.post("/deleteComment", async (req, res) => {
+    var commentid = req.body.commentid;
+    var sql = 'DELETE FROM comment WHERE rowid=?';
+    var params = [commentid];
+    (await db).run(sql, params)
+    .then(()=>
+        res.send('COMMENT DELETED')
+    );
 });
 
 server.get(["/getMyItems/:username", "/getMyItems/:username/category/:name"], async(req, res)=>{
@@ -223,15 +259,18 @@ server.get(["/getCartItems/:username", "/getCartItems/:username/category/:name"]
         res.send(row);
     });
 });
-server.get("/getItem/:id", async (req, res)=>{
+server.get("/getItem/:id/:username", async (req, res)=>{
     var itemId = req.params.id;
+    var username = req.params.username;
     var sql = `select rowid, * from items WHERE rowid=${itemId}`;
     (await db).get(sql)
     .then(
         async (rows)=>{
             // rows["incart"] = true;
             if(rows !== undefined){
-                (await server.locals.db).all(`SELECT * FROM cart WHERE itemID = ${itemId}`)
+                var sql2 = `SELECT * FROM cart WHERE itemID = ? and name = ?`;
+                var params2 = [itemId, username];
+                (await server.locals.db).all(sql2, params2)
                 .then(internalrows =>{
                     var inCart = false;
                     if ((internalrows).length !== 0){
@@ -319,20 +358,23 @@ server.post("/signIn", async (req, response)=>{
     var data = req.body;
     var username = data.userName;
     var password = data.password;
-    var sql = "select username, password from users where username=?";
+    var sql = "select username, password, blocked, admin from users where username=?";
     var params = [username];
     (await db).all(sql, params)
-    .then(res=>{
-        if(res.length === 0){
-            response.send("incorrect username");
+    .then(resp=>{
+        if(resp.length === 0){
+            console.log("incorrect username");
+            response.json({res: "incorrect username"});
         }else{
-            var user = res[0];
-            bcrypt.compare(password, user.password, (err, res)=>{
+            var username = resp[0].username;
+            var blocked = resp[0].blocked;
+            var admin = resp[0].admin;
+            bcrypt.compare(password, resp[0].password, (err, res)=>{
                 if(err){console.log(err);}
                 if(res){
-                    response.send(username);
+                    response.json({res:{username: username, blocked: blocked, admin: admin}});
                 }else{
-                    response.send("incorrect password")
+                    response.json({res: "incorrect password"});
                 }
             }); 
         }
@@ -544,20 +586,59 @@ server.get("/higestSellReq", async(req, res)=>{
     (await db).all(sql, params)
     .then(async row=>{
         var data = row;
-        for(let i = 0; i<data.length; i++){
-            var sql2 = "Select * from purchaseHistory Where sellername = ? and date LIKE ? order by price desc";
-            var params2 = [data[i].sellername, `%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
-            (await db).all(sql2, params2)
-            .then(async row=>{
-                data[i]["details"]=row;
-                if(i+1 == data.length){
-                    var sql3 = "DELETE FROM purchaseHistory WHERE date NOT LIKE ?";
-                    var params3 = [`%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
-                    (await db).run(sql3, params3);
-                    res.json(data);
+        if(data.length != 0){
+            for(let i = 0; i<data.length; i++){
+                var sql2 = "Select * from purchaseHistory Where sellername = ? and date LIKE ? order by price desc";
+                var params2 = [data[i].sellername, `%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+                (await db).all(sql2, params2)
+                .then(async row=>{
+                    data[i]["details"]=row;
+                    if(i+1 == data.length){
+                        var sql3 = "DELETE FROM purchaseHistory WHERE date NOT LIKE ?";
+                        var params3 = [`%${new Date().toLocaleString('en-US', { month: 'short' })}%`];
+                        (await db).run(sql3, params3);
+                        console.log(data);
+                        res.json(data);
+                    }
+                });
+            }
+        }else{
+            res.json(data);
+        }
+    });
+});
+
+server.get("/UsersAndData/adminSearch/:query", async(req, res)=>{
+    var query = req.params.query;
+    var userSql = "Select username, email, blocked, admin from users where username = ?";
+    var userParams = [query];
+    await (await db).all(userSql, userParams)
+    .then(async resp => {
+        if(resp.length > 0){
+            res.json({"resp": resp, "page": "user"});
+        }else{
+            var itemsSql = "Select rowid, * from items where title like ? OR category like ? OR description like ?;";
+            var itemsParams = [`%${query}%`, `%${query}%`, `%${query}%`];
+            (await db).all(itemsSql, itemsParams)
+            .then(resp => {
+                if(resp.length > 0){
+                    res.json({"resp": resp, "page": "data"});
+                }else{
+                    res.json({"resp": "No User or Data found with search query of "+query});
                 }
             });
         }
+    });
+});
+
+server.get("/getAllItems", async (req, res)=>{
+    var page = parseInt(req.query.page);
+    console.log(`/getAllItems get called. \n page no.: ${page}`)
+    var sql = `SELECT rowid, * FROM items ORDER BY rowid DESC LIMIT ?, 10;`;
+    var params = [parseInt(page)*10];
+    (await db).all(sql, params)
+    .then(data => {
+        res.json({"nextPage": page+1, "response": data});
     });
 });
 
@@ -570,18 +651,13 @@ server.get("/:path", (req, res)=>{
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
 server.listen(server_port, async ()=>{
-    // var sql = `CREATE TABLE purchaseHistory (
-    //     itemtitle TEXT,
-    //     price NUMERIC,
-    //     buyername TEXT,
-    //     sellername TEXT,
-    //     date TEXT,
-    //     FOREIGN KEY (itemtitle) REFERENCES items(title),
-    //     FOREIGN KEY (buyername) REFERENCES users(username),
-    //     FOREIGN KEY (sellername) REFERENCES users(username)
-    //   )`;
-    // (await db).all(sql).then(
-    //     (err)=> console.log(err)
-    // );
+    // var sql = `INSERT INTO "main"."cart"
+    // ("name", "itemID")
+    // VALUES ('das5', 33);`;
+    // (await db).all(sql)
+    // .then(res => {
+    //     console.log(res);
+    // });
+
     console.log("Server is listening on http://localhost:3000");
 });

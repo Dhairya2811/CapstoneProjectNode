@@ -12,6 +12,7 @@ import Payment from "../Payment/Payment";
 import Error404 from "../Error404/Error404";
 import PostAd from "../PostAd/PostAd";
 import HigestSell from "../HigestSell/HigestSell";
+import UsersAndData from "../UsersAndData/UsersAndData";
 
 class App extends React.Component{
     render(){
@@ -34,7 +35,9 @@ class App extends React.Component{
                             <Route path="/editItem/:id" element={<AddItem role="edit"/>} />
                             <Route path="/payment" element={<Payment />}/>
                             <Route path="/postad" element={<PostAd />}/>
-                            <Route path="/higestSell" element={<HigestSell />}/>
+                            <Route path="/higestSale" element={<HigestSell />}/>
+                            <Route path="/usersAndData" element={<UsersAndData />} />
+                            <Route path="/usersAndData/search/:search_by" element={<UsersAndData />} />
                             <Route path="*" element={<Error404 />}/>
                     </Routes>
                 </div>

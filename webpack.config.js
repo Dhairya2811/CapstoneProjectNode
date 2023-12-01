@@ -19,14 +19,15 @@ module.exports = {
       rules: [
         {
           test: /\.js$/,
-          loader: 'babel-loader',
+          loader: "babel-loader",
+          options: {compact: false}
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
           use:[
             "file-loader",
             {
-              loader: 'image-webpack-loader',
+              loader: 'image-webpack-loader', 
               options:{
                 bypassOnDebug: true,
                 disable: true,

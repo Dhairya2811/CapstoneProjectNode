@@ -12,6 +12,8 @@ var AddItem = ({role})=>{
     var [uploadImageVal, setUploadImageVal] = useState();
     var [dealValIn, setDealValIn] = useState("no deal");
     var [addDeal, setAddDeal] = useState(false);
+    var [username, setUserName] = useState();
+    var [blocked, setBlocked] = useState();
 
     var navigate = useNavigate();
 
@@ -43,8 +45,7 @@ var AddItem = ({role})=>{
 
     var prepJsonResult = (title, description, price, 
         image, imageName, quantity, category, 
-        deal, dealPrice = 0, dealText = "")=>{        
-            var username = sessionStorage.getItem("username")
+        deal, dealPrice = 0, dealText = "")=>{
             if(deal){
                 return JSON.stringify({
                     title: title, 
@@ -78,21 +79,6 @@ var AddItem = ({role})=>{
     var prepJsonResultEdit = (rowid, title, description, 
         price, quantity, category, image, imageName, 
         deal, dealText = "", dealPrice = 0.00)=>{
-        var username = sessionStorage.getItem("username");
-        /**
-               var id = data.id;
-               var title = data.title;
-               var description = data.description;
-               var price = data.price;
-               var quantity = data.quantity;
-               var category = data.category;
-               var image = data.image;
-               var imageName = data.imageName;
-               var name = data.username;
-               var deal = data.deal;
-               var deal_title = data.dealText;
-               var dealPrice = data.dealPrice;
-             */
         if(deal){
             return JSON.stringify({
                 id: rowid,
@@ -197,20 +183,6 @@ var editItem = (image, title, description, price, category, quantity, passDeals,
         let filepathtemparr = String(filepathtemp).split("\\");
         imageName = (filepathtemparr[filepathtemparr.length-1]);
         reader.onload= ()=>{
-            /**
-               var id = data.id;
-               var title = data.title;
-               var description = data.description;
-               var price = data.price;
-               var quantity = data.quantity;
-               var category = data.category;
-               var image = data.image;
-               var imageName = data.imageName;
-               var name = data.username;
-               var deal = data.deal;
-               var deal_title = data.dealText;
-               var dealPrice = data.dealPrice;
-             */ 
             if(addDeal && passDeals){
                 console.log("edit with new image and deal");
                 submitData("edit", prepJsonResultEdit(data.rowid, title, description, price, quantity, category, 
@@ -334,12 +306,15 @@ var dealValueAdder = (deal_title)=>{
 
     useEffect(()=>{
         var urlArr = (window.location.pathname.split("/"));
-        
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        console.log(user);
+        setUserName(user == null ? null : user.username);
+        setBlocked(user == null ? null : user.blocked);
         if(role == 'edit' && count == 0){
             setCount(1);            
             setLoading(true);
             var id = urlArr[urlArr.length -1];
-            fetch(`/getItem/${id}`)
+            fetch(`/getItem/${id}/${user.username}`)
             .then(res => res.json())
             .then(res => {   
                 setData(res); 
@@ -410,8 +385,10 @@ var dealValueAdder = (deal_title)=>{
         fileReader.readAsDataURL(tgt[0]);
     };
     var returnDiv = ()=>{
-        if(sessionStorage.getItem("username") == null){
-            <Error404 errorMessage="Please Sign in to add item" linkAvailable = "true"/>
+        if(username == null){
+            return <Error404 errorMessage="Please Sign in to add item" linkAvailable = "true"/>
+        }else if(blocked == 1){
+            return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable = "true"/>
         }else if(inserted == true){
             setInserted(false);
             navigate("/");

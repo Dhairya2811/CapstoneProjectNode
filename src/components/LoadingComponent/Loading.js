@@ -20,7 +20,6 @@ export default function LoadingSpinner() {
         color="#003A56"
         ariaLabel="loading"
         wrapperStyle
-        wrapperClass
       />
     </div>
   );

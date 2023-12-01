@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import images from './images.json';
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 
 
@@ -14,10 +14,12 @@ var Navigationbar = ()=>{
     const [show, setShow] = useState(false);
     const [categoryShow, setCategoryShow] = useState(false);
     const [searchShow, setSearchShow] = useState(false);
-    const [adminUser, setAdminUser] = useState(false);
+    const [username, setUserName] = useState();
+    const [blocked, setBlocked] = useState();
+    const [admin, setAdmin] = useState();
+
     var site_logo = images.name_logo;
     var theme_color= "#003A56";
-    var username = sessionStorage.getItem("username");
     var returnNav;
     var rightSide;
     var location = useLocation();
@@ -25,8 +27,16 @@ var Navigationbar = ()=>{
     useEffect(()=>{
         var path = window.location.pathname;
         var pathArr = window.location.pathname.split("/");
+    
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        setUserName(user != null ? user.username : null);
+        setBlocked(user != null ? user.blocked : null);
+        setAdmin(user != null ? user.admin : null);
         if(path == "/" || path == "/myItems" || path == "/myCart"){
             setCategoryShow(true);
+            setSearchShow(true);
+        }else if(pathArr[1] == "UsersAndData"){
+            setCategoryShow(false);
             setSearchShow(true);
         }else if(pathArr[1] == "category"){
             setSearchShow(false);
@@ -38,21 +48,6 @@ var Navigationbar = ()=>{
         else{
             setSearchShow(false);
             setCategoryShow(false);
-        }
-        if(username != null){
-            fetch("/userInfo", {
-                method:"post",
-                headers:{
-                    "Content-Type":"application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({username: username})
-            })
-            .then(res => res.json())
-            .then(res=>{
-                var admin = Boolean(res.admin);
-                setAdminUser(admin);
-            });
         }
     }, [location]);
 
@@ -81,7 +76,7 @@ var Navigationbar = ()=>{
         event.preventDefault();
     };
     var logout = ()=>{
-        sessionStorage.removeItem("username");
+        sessionStorage.removeItem("user");
         window.location.href = "/";
     }
 
@@ -94,7 +89,7 @@ var Navigationbar = ()=>{
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/register" onClick={showChange} >Register</Nav.Link>
             <Nav.Link className="NavFonts NavbarLink Navitem"  as={NavLink} to="/signin" onClick={showChange}>Sign In</Nav.Link>
             {categoryShow == true ? 
-            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
+            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown} id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
                 <NavDropdown.Item  className="NavFonts NavbarLink Navitem" eventKey="All">All</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Toys">Toys</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
@@ -109,16 +104,17 @@ var Navigationbar = ()=>{
     }else{
         returnNav = <Nav id="NavbarBody" className="justify-content-end flex-grow-1 pe-3">
             <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/" onClick={showChange}>Home</Nav.Link>
-            <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/myItems" onClick={showChange}>My Item</Nav.Link>
-            <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/addItem" onClick={showChange}>Add Item</Nav.Link>
-            {adminUser == true ? 
+            <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/myItems" onClick={showChange} disabled={blocked == 1}>My Item</Nav.Link>
+            <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/addItem" onClick={showChange} disabled={blocked == 1}>Add Item</Nav.Link>
+            {admin == true ? 
             <>
                 <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/postad" onClick={showChange}>Post Ad</Nav.Link>
-                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/higestSell" onClick={showChange}>Higest Sell</Nav.Link>
+                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/higestSale" onClick={showChange}>Higest Sale</Nav.Link>
+                <Nav.Link className="NavFonts NavbarLink Navitem" as={NavLink} to="/UsersAndData" onClick={showChange}>Users and Data</Nav.Link>
             </> : <></>}
             {/* <Nav.Link as={NavLink} to="#" onClick={logout}>Log Out</Nav.Link> */}
             {categoryShow == true ? 
-            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown}             id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
+            <NavDropdown title="Category" className="NavbarLink NavFonts" onSelect={onDropDown} id='offcanvasNavbarDropdown-expand-true' style={{fontSize: "large"}}>
                 <NavDropdown.Item  className="NavFonts NavbarLink Navitem" eventKey="All">All</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Toys">Toys</NavDropdown.Item>
                 <NavDropdown.Item className="NavFonts NavbarLink Navitem" eventKey="Home">Home</NavDropdown.Item>
@@ -130,7 +126,7 @@ var Navigationbar = ()=>{
             </NavDropdown> : <></>}
         </Nav>
         rightSide=<NavDropdown id="username_Dropdown" title={username} className="NavFonts">
-            <NavDropdown.Item className="username_Dropdown_items NavFonts" id="myCart" as={NavLink} to="/myCart">My Cart</NavDropdown.Item>
+            <NavDropdown.Item className="username_Dropdown_items NavFonts" id="myCart" as={NavLink} to="/myCart"  disabled={blocked == 1}>My Cart</NavDropdown.Item>
             <NavDropdown.Divider style={{color: "#003A56"}}/>
             <NavDropdown.Item className="username_Dropdown_items NavFonts" id="logout" onClick={logout} >Log Out</NavDropdown.Item>
         </NavDropdown>
@@ -148,7 +144,7 @@ var Navigationbar = ()=>{
                     aria-labelledby={`offcanvasNavbarLabel-expand-true`}
                     style={{backgroundColor: theme_color}} onHide={showChange}
                     >
-                        <Offcanvas.Header closeButton closeVariant="#E8F0F4" className="navbar_offcanvas" >
+                        <Offcanvas.Header closeButton closeVariant="white" className="navbar_offcanvas" >
                         <Offcanvas.Title id={`offcanvasNavbarLabel-expand-true`}>
                             {/* add the my store logo */}
                             <Navbar.Brand as={NavLink} to="/"><img className = "navbar_image" src={site_logo} /></Navbar.Brand>
