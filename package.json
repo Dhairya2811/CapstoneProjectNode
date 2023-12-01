@@ -47,6 +47,7 @@
     "sass-middleware": "^0.0.3",
     "sqlite": "^4.1.1",
     "sqlite3": "^5.1.4",
+    "style-loader": "^3.3.3",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2"
   }
