@@ -240,7 +240,7 @@ const Data = ({ data }) => {
                         <div style={commenterName}>
                             <h4>{comment.name}</h4>
                             <small style={small}>{comment.datetime} </small>
-                            {comment.flag == "0" ? <div style={{...flagBtn, color: "gray"}} onClick={()=> flagComment(comment)} >&#9873;</div> : <div style={{...flagBtn, color: "red"}} onClick={()=> flagComment(comment)} >&#9873;</div>}
+                            {comment.flag == "0" ? <div style={{...flagBtn, color: "gray"}}>&#9873;</div> : <div style={{...flagBtn, color: "red"}} >&#9873;</div>}
                             <button onClick={()=>deleteCommentClick(comment.rowid)} className="btn btn-danger">Delete</button>
                         </div>
                     </div>
