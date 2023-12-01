@@ -19,17 +19,21 @@ var ItemDetails = () => {
     const [username, setUserName] = useState(null);
     const [blocked, setBlocked] = useState(null);
     
+    var setUsersInfo = async ()=>{
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if(user != null){
+            await setUserName(user.username);
+            await setBlocked(user.blocked);
+        }
+    }
 
     useEffect(()=>{
         var user = JSON.parse(sessionStorage.getItem("user"));
-        if(user != null){
-            setUserName(user.username);
-            setBlocked(user.blocked);
-        }
+        setUsersInfo()
         const fetchData = async ()=>{
             if(itemLoaded == false){
                 await setItemLoaded(true);
-                fetch(`/getItem/${id}/${username}`)
+                fetch(`/getItem/${id}/${user.username}`)
                 .then(res => res.json())
                 .then(async res=>{
                     await setItem(res)
