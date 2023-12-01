@@ -35,7 +35,7 @@ var  MyItem = ({count})=> {
         }
     });
     var returnContent = () => {
-        if(blocked == 0){
+        if(blocked == 1){
             return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable="true"/>;
         }
         return (<div className="displayMyItemsPage">

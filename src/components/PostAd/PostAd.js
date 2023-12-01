@@ -4,11 +4,12 @@ import AddUrlImage from './Image.json';
 import { useNavigate } from "react-router-dom";
 
 var PostAd = () => {
-    const [admin, setAdmin] = useState(false);
     const [url, setUrl] = useState("");
     const[title, setTitle] = useState("");
     const[description, setDescription] = useState("");
     const[itemId, setItemId] = useState("");
+    const [username, setUserName] = useState(null);
+    const [admin, setAdmin] = useState(0);
 
     var navigate = useNavigate();
 
@@ -87,18 +88,9 @@ var PostAd = () => {
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     useEffect(()=>{
-        fetch("userInfo", {
-            method:"post",
-            headers:{
-                "Content-Type":"application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({username: sessionStorage.getItem("username")})
-        })
-        .then(res => res.json())
-        .then(res=>{
-            setAdmin(Boolean(res.admin));
-        });
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        setUserName(user == null ? null : user.username);
+        setAdmin(user == null ? 0 : user.admin);
         fetch("/lastAd")
         .then(res => res.json())
         .then(res=>{
@@ -145,7 +137,7 @@ var PostAd = () => {
     };
 
     var showPage = ()=>{
-        if(admin == true){
+        if(admin == 1){
             return (
                 <div style={PostAd_container}>
                     <form style={PostAd_div} onSubmit={submitAd}>
