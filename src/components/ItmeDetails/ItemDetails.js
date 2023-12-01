@@ -22,12 +22,14 @@ var ItemDetails = () => {
 
     useEffect(()=>{
         var user = JSON.parse(sessionStorage.getItem("user"));
-        setUserName(user.username);
-        setBlocked(user.blocked);
+        if(user != null){
+            setUserName(user.username);
+            setBlocked(user.blocked);
+        }
         const fetchData = async ()=>{
             if(itemLoaded == false){
                 await setItemLoaded(true);
-                fetch(`/getItem/${id}/${user.username}`)
+                fetch(`/getItem/${id}/${username}`)
                 .then(res => res.json())
                 .then(async res=>{
                     await setItem(res)

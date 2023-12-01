@@ -95,6 +95,7 @@ var PostAd = () => {
         .then(res => res.json())
         .then(res=>{
             var previousAdData = (res.res);
+            console.log(previousAdData);
             if(previousAdData.length != 0){
                 setUrl(previousAdData[0].videoLink);
                 setTitle(previousAdData[0].title);
@@ -165,7 +166,7 @@ var PostAd = () => {
                             <div style={{width: "100%"}}>
                                 <textarea style={AdDescription} rows="4" 
                                 id="newItemDescription" placeholder="Ad description" 
-                                className="form-control" onChange={event=>{setDescription(event.target.value)}} required>{description}</textarea>
+                                className="form-control" onChange={event=>{setDescription(event.target.value)}} value={description} required></textarea>
                             </div>
                             <div style={itemid_div_style}>
                                 <input style={itemid_style} type='number' id='itemid' placeholder='Item ID'

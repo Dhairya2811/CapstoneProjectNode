@@ -1,4 +1,3 @@
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 var webpack = require('webpack');
 
 module.exports = {

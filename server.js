@@ -4,8 +4,6 @@ var path = require("path");
 var sqlite3 = require("sqlite3");
 var { open } = require("sqlite"); 
 var bcrypt = require("bcrypt");
-const cors = require("cors");
-const { param } = require("jquery");
 
 // var express = require("express");
 
