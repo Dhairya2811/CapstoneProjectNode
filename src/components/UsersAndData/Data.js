@@ -10,6 +10,7 @@ const Data = ({ data }) => {
     var [alertText, setAlertText] = useState("");
     var [showAlert, setShowAlert] = useState(false);
     var [comments, setComments] = useState({});
+    var [showComments, setShowComments] = useState([]);
     var navigate = useNavigate();
 
     // style ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,6 +25,8 @@ const Data = ({ data }) => {
         padding: "2em",
         marginTop: "1em",
         cursor: "pointer",
+        position: "relative",
+        zIndex: "1",
     };
 
     var imageDiv = {
@@ -91,22 +94,29 @@ const Data = ({ data }) => {
         var pathArr = location.pathname.split("/");
         if(data.length != 0 && pathArr[2] != undefined){
             await setItems(data);
+            var idsArray = showComments;
             await data.forEach(async element => {
                 var cpComments = comments;
                 var jsonRes = await fetch("/getComments/"+element.rowid);
                 var res = await jsonRes.json();
+                var dataId = element.rowid;
+                idsArray[dataId] ="none";
                 cpComments[element.rowid] = res;
                 setComments(cpComments);
             });
-            await setLoading(false);
             await setShowLoadMore(false);
+            await setLoading(false);
+            await setShowComments(idsArray);
         }else{
             var jsonRes = await fetch("/getAllItems?page="+page);
             var res = await jsonRes.json();
+            var idsArray = showComments;
             await res.response.forEach(async element => {
                 var cpComments = comments;
                 var jsonRes = await fetch("/getComments/"+element.rowid);
                 var res = await jsonRes.json();
+                var dataId = element.rowid;
+                idsArray[dataId] =false;
                 cpComments[element.rowid] = res;
                 setComments(cpComments);
             });
@@ -116,6 +126,7 @@ const Data = ({ data }) => {
                 await setShowLoadMore(false);
             }
             await setLoading(false);
+            await setShowComments(idsArray);
         }
     };
 
@@ -125,6 +136,51 @@ const Data = ({ data }) => {
     
     // work on the detials page.
     var showItem = (category, deal, dealPrice, deal_title, description, image, imageName, name, price, quantity, rowid, title)=>{
+        // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+        var commentsDivStyle = {
+            height: "fit-content",
+            width: "100%",
+        };
+        var commentHeader= {
+            width: "100%",
+            borderBottom: "1px solid gray",
+        };
+        var commenterName = {
+            marginTop: "1em",
+            display: "grid",
+            gridTemplateColumns: "45% 45% 10%",
+            color: "rgb(56, 56, 56)",
+        };
+        var commentText = {
+            minHeight: "3em",
+            marginBottom: "2em",
+            padding: "0 1.5%",
+        };
+        var flagBtn = {
+            cursor: "pointer",
+            paddingLeft: "2em",
+            display: "flex",
+            alignSelf: "flex-end",
+            marginBottom: "5px"
+        };
+        var small= {
+            display: "flex",
+            justifyContent: "end",
+            alignSelf: "flex-end",
+            marginBottom: "5px",
+        };
+        var allCommentsDiv = {
+            display: "block",
+            height: "fit-content",
+            width: "100%",
+            padding: "30px 2em 10px",
+            backgroundColor: "#87878769",
+            marginTop: "-30px",
+            borderRadius: "1em"
+        };
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
         var displayDescription = "";
         var newDescription = (`${description}`).replace("\n", " ");
         if(newDescription.split(" ").length >50 || description.split("\n").length > 3){
@@ -153,33 +209,72 @@ const Data = ({ data }) => {
             });
         };  
 
-        var showCommentClick = (e)=>{
+        var showCommentClick = async (e)=>{
             e.stopPropagation();
-            console.log(comments);
-        };    
-
-        return (<div key={rowid} style={itemStyle}>
-            <div style={imageDiv} onClick={clickOnItem}>
-                <img style={imageStyle} className="itemImage" src={image} />    
-            </div>
-            <div style={detailsDiv} onClick={clickOnItem}>
-                <div style={detailsText}>
-                    <h2>{title}</h2>
-                    {deal == 1 ? 
-                    <div style={dealTitleStyle}>
-                        {deal_title}
+            var showCommentsVar = showComments;
+            await setShowComments({});
+            showCommentsVar[rowid] = !showCommentsVar[rowid];
+            await setShowComments(showCommentsVar);
+        };   
+        
+        var displayComment = (comment) => {
+            return (<div>
+                    <div style={commentHeader}>
+                        <div style={commenterName}>
+                            <h4>{comment.name}</h4>
+                            <small style={small}>{comment.datetime} </small>
+                            {comment.flag == "0" ? <div style={{...flagBtn, color: "gray"}} onClick={()=> flagComment(comment)} >&#9873;</div> : <div style={{...flagBtn, color: "red"}} onClick={()=> flagComment(comment)} >&#9873;</div>}
+                        </div>
                     </div>
-                    : <></>}
-                    <div>{displayDescription}</div>
-                    <div style={priceDiv}>$ {deal == 1 ? dealPrice : price}</div>
+                    <div style={commentText}>
+                        {comment.comment}
+                    </div>
+                </div>)
+        }
+
+        return (
+        <>
+            <div key={rowid} style={{...itemStyle, boxShadow: showComments[rowid] ? "10px 10px 5px #00395622" : "0 0"}}>
+                <div style={imageDiv} onClick={clickOnItem}>
+                    <img style={imageStyle} className="itemImage" src={image} />    
                 </div>
-                <div style={detailsBtn}>
-                    <div style={{height: "fit-content",  zIndex: "1"}}><input type="button" className="btn btn-danger" value={"Delete"} onClick={deleteBtnClick} /></div>
-                    <div style={{height: "fit-content",  zIndex: "1"}}><input type="button" className="btn btn-success" value={"Show Comments"} onClick={showCommentClick} /></div>
+                <div style={detailsDiv} onClick={clickOnItem}>
+                    <div style={detailsText}>
+                        <h2>{title}</h2>
+                        {deal == 1 ? 
+                        <div style={dealTitleStyle}>
+                            {deal_title}
+                        </div>
+                        : <></>}
+                        <div>{displayDescription}</div>
+                        <div style={priceDiv}>$ {deal == 1 ? dealPrice : price}</div>
+                    </div>
+                    <div style={detailsBtn}>
+                        <div style={{height: "fit-content",  zIndex: "1"}}><input type="button" className="btn btn-danger" value={"Delete"} onClick={deleteBtnClick} /></div>
+                        <div style={{height: "fit-content",  zIndex: "1"}}><input type="button" className="btn btn-success" value={"Show Comments"} onClick={showCommentClick} /></div>
+                    </div>
                 </div>
             </div>
-            
-        </div>);
+            <div>
+                {showComments[rowid] == true ? 
+                    <div style={allCommentsDiv}>
+                        <div id={`comment-${rowid}`} style={commentsDivStyle}>
+                            {
+                                comments[rowid] != undefined ? 
+                                    comments[rowid].map(comment => {
+                                        return (<div key={comment.rowid}>
+                                            {displayComment(comment)}
+                                        </div>
+                                        )
+                                    }) : 
+                                    <></>
+                            }
+                        </div>
+                    </div> : 
+                    <></>
+                }
+            </div>
+        </>);
     };
 
     var returnContent = () => {
