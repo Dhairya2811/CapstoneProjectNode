@@ -29,11 +29,15 @@ var ItemDetails = () => {
 
     useEffect(()=>{
         var user = JSON.parse(sessionStorage.getItem("user"));
+        var username = null;
+        if(user != null){
+            username = user.username
+        }
         setUsersInfo()
         const fetchData = async ()=>{
             if(itemLoaded == false){
                 await setItemLoaded(true);
-                fetch(`/getItem/${id}/${user.username}`)
+                fetch(`/getItem/${id}/${username}`)
                 .then(res => res.json())
                 .then(async res=>{
                     await setItem(res)
