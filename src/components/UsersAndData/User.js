@@ -39,6 +39,7 @@ const User = ({ data }) => {
     var fetchUsers = ()=>{
         var pathArr = location.pathname.split("/");
         if(data.length != 0 && pathArr[2] != undefined){
+            console.log(data);
             setUsers(data);
         }else{
             fetch("/users", {
@@ -56,7 +57,7 @@ const User = ({ data }) => {
     }
 
     var buttonClickFun = (username, block, admin)=>{
-        fetch("userblockadmin", {
+        fetch("/userblockadmin", {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({username: username, block: block, admin: admin})
@@ -64,7 +65,7 @@ const User = ({ data }) => {
         .then(res => res.text())
         .then(res => {
             if(res == "USER INFO UPDATED"){
-                fetchUsers();
+                location.reload();
             }
         });
     }
@@ -97,7 +98,7 @@ const User = ({ data }) => {
     }, []);
 
     return (<>
-        {users.length != 0 && users != "No User or Data found with search query of try" ? users.map(user => {
+        {users.length != 0 && !users.includes("No User or Data found with search query of ") ? users.map(user => {
             return <div key={user.username}>{displayUser(user)}</div>
         }) : <h2>{users}</h2>}
     </>)
