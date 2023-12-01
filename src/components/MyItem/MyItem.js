@@ -38,13 +38,17 @@ var  MyItem = ({count})=> {
         if(blocked == 1){
             return <Error404 errorMessage="Your account has been blocked by an admin." linkAvailable="true"/>;
         }
-        return (<div className="displayMyItemsPage">
-            <div className="displayItems">
-                {loading == false ? (items).map((item, index)=>{
-                    return <ItemDisplay item = {item} key={index} />
-                }) : <LoadingSpinner /> }
-            </div>
-        </div>);
+        if(items.length != 0){
+            return (<div className="displayMyItemsPage">
+                <div className="displayItems">
+                    {loading == false ? (items).map((item, index)=>{
+                        return <ItemDisplay item = {item} key={index} />
+                    }) : <LoadingSpinner /> }
+                </div>
+            </div>);
+        }else{
+            return <h2 style={{padding: "1em 10%"}}>No item has been added.</h2>
+        }
     };
 
     return(<>
